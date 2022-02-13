@@ -1,8 +1,8 @@
 import fs from 'fs';
-import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
+import { CompositeGeneratorNode, processGeneratorNode} from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
-import { App, Page, WidgetWrapper, Widget } from '../language-server/generated/ast';
+import { App, Page, WidgetWrapper, Widget} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
@@ -58,7 +58,7 @@ class GrommetAppGenerator {
      * //todo le faire dynamiquement
      */
     dependencies(): string{
-        return `import { Grommet, Box, Heading, Tabs, Tab } from 'grommet';`;
+        return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text } from 'grommet';`;
     }
 
     capitalizeFirstLetter(str: string) {
@@ -125,12 +125,13 @@ class GrommetAppGenerator {
     }
 
     pagesDeclaration(pages:Page[]){
-        let tabs = "\t\t<Tabs>\n"
+        let sb: StringBuilder = new StringBuilder();
+        sb.write("\t\t<Tabs>\n")
         pages.forEach((page)=>{
-            tabs += `\t\t\t<Tab  title="${page.title}">\n`+ this.PageDeclaration(page)+"\t\t\t</Tab>\n"
+            sb.write(`\t\t\t<Tab  title="${page.title}">\n`+ this.PageDeclaration(page) + "\t\t\t</Tab>\n")
         })
-        tabs+="\t\t</Tabs>\n"
-        return tabs
+        sb.write("\t\t</Tabs>\n")
+        return sb.toString()
     }
 
     PageDeclaration(page: Page){
@@ -153,7 +154,7 @@ class GrommetAppGenerator {
     WidgetWrapperDeclaration(widgetWrapperObj: WidgetWrapper){
         let widgets = `\t\t\t\t\t<Box name="${widgetWrapperObj.name}" \n width="${widgetWrapperObj.width}"> \n`
         widgetWrapperObj.widgets.forEach(widgetObj=>{
-            widgets += this.WidgetDeclaration(widgetObj)
+            widgets += this.generateWidgets(widgetObj)
         })
         widgets += "\n\t\t\t\t\t</Box>\n"
         return widgets;
@@ -166,9 +167,28 @@ class GrommetAppGenerator {
             return `
             \t\t\t\t\t\t<Box>
             \t\t\t\t\t\t\t title: ${widget.title}
-            \t\t\t\t\t\t\t description: ${widget.description}
+            \t\t\t\t\t\t\t description: ${widget.title}
             \t\t\t\t\t\t</Box>
             `
         }
+    }
+
+    generateWidgets(widget: Widget): string{
+        if(`${widget.$type}` === "WidgetClassique"){ // widget classic
+            return this.generateWidgetClassic(widget);
+        }else{ // others types widget 
+            console.log(widget);
+            return "other type";
+        }
+    }
+
+    generateWidgetClassic(widget: Widget): string{
+        let sb: StringBuilder = new StringBuilder();
+        sb.writeln("<Box round pad=\"medium\" direction=\"column\" background=\"#EEEEEE\"> "); 
+        sb.writeln("<Box height=\"xsmall\" width=\"xsmall\">");
+        sb.writeln("<Image fit=\"cover\" src=" + `${'"' + widget.icon + '"'}` + "/> </Box>"); 
+        sb.writeln("<Heading alignSelf=\"center\" level=\"2\" margin=\"none\" size=\"small\"> " + `${widget.title}`+ "</Heading>"); 
+        sb.writeln("<Text alignSelf=\"center\" size=\"90px\" weight=\"bold\">" + `${widget.value}`+ "</Text></Box>"); 
+        return sb.toString();
     }
 }

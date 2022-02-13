@@ -85,25 +85,16 @@ export function isTheme(item: unknown): item is Theme {
 
 export interface Widget extends AstNode {
     readonly $container: WidgetWrapper;
-    description: string
+    icon: string
     name: string
     title: string
+    value: number
 }
 
 export const Widget = 'Widget';
 
 export function isWidget(item: unknown): item is Widget {
     return reflection.isInstance(item, Widget);
-}
-
-export interface WidgetClassique extends AstNode {
-    content: string
-}
-
-export const WidgetClassique = 'WidgetClassique';
-
-export function isWidgetClassique(item: unknown): item is WidgetClassique {
-    return reflection.isInstance(item, WidgetClassique);
 }
 
 export interface WidgetWrapper extends AstNode {
@@ -119,14 +110,23 @@ export function isWidgetWrapper(item: unknown): item is WidgetWrapper {
     return reflection.isInstance(item, WidgetWrapper);
 }
 
-export type UxifierAstType = 'App' | 'Color' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'Widget' | 'WidgetClassique' | 'WidgetWrapper';
+export interface WidgetClassique extends Widget {
+}
+
+export const WidgetClassique = 'WidgetClassique';
+
+export function isWidgetClassique(item: unknown): item is WidgetClassique {
+    return reflection.isInstance(item, WidgetClassique);
+}
+
+export type UxifierAstType = 'App' | 'Color' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'Widget' | 'WidgetWrapper' | 'WidgetClassique';
 
 export type UxifierAstReference = never;
 
 export class UxifierAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['App', 'Color', 'Header', 'Menu', 'Page', 'Theme', 'Widget', 'WidgetClassique', 'WidgetWrapper'];
+        return ['App', 'Color', 'Header', 'Menu', 'Page', 'Theme', 'Widget', 'WidgetWrapper', 'WidgetClassique'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -138,6 +138,9 @@ export class UxifierAstReflection implements AstReflection {
             return true;
         }
         switch (subtype) {
+            case WidgetClassique: {
+                return this.isSubtype(Widget, supertype);
+            }
             default: {
                 return false;
             }

@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.uxifier",
-      "match": "\\b(app|code|color|colors{|header|menu|page|theme|widget|widgetClassique|widgetWrapper|width)\\b"
+      "match": "\\b(app|code|color|colors{|header|icon|level|logo|menu|page|theme|title|value|widgetClassique|widgetWrapper|width)\\b"
     },
     {
       "name": "keyword.symbol.uxifier",

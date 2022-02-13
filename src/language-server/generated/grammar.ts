@@ -120,6 +120,10 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
+            "$type": "Keyword",
+            "value": "title"
+          },
+          {
             "$type": "Assignment",
             "feature": "title",
             "operator": "=",
@@ -132,6 +136,10 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
+            "$type": "Keyword",
+            "value": "logo"
+          },
+          {
             "$type": "Assignment",
             "feature": "logo",
             "operator": "=",
@@ -142,6 +150,10 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "$refText": "STRING"
               }
             }
+          },
+          {
+            "$type": "Keyword",
+            "value": "level"
           },
           {
             "$type": "Assignment",
@@ -287,46 +299,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "content",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "STRING"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "$type": "ParserRule",
-      "parameters": [],
-      "name": "Widget",
-      "hiddenTokens": [],
-      "alternatives": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Keyword",
-            "value": "widget",
-            "elements": []
-          },
-          {
-            "$type": "Keyword",
-            "value": "{"
-          },
-          {
-            "$type": "RuleCall",
-            "arguments": [],
-            "rule": {
-              "$refText": "WidgetClassique"
-            },
-            "elements": []
-          },
-          {
-            "$type": "Assignment",
             "feature": "name",
             "operator": "=",
             "terminal": {
@@ -336,6 +308,10 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "$refText": "ID"
               }
             }
+          },
+          {
+            "$type": "Keyword",
+            "value": "title"
           },
           {
             "$type": "Assignment",
@@ -350,8 +326,12 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
+            "$type": "Keyword",
+            "value": "icon"
+          },
+          {
             "$type": "Assignment",
-            "feature": "description",
+            "feature": "icon",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
@@ -363,9 +343,35 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Keyword",
-            "value": "}"
+            "value": "value"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "value",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "INT"
+              }
+            }
           }
         ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Widget",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "RuleCall",
+        "arguments": [],
+        "rule": {
+          "$refText": "WidgetClassique"
+        },
+        "elements": []
       }
     },
     {

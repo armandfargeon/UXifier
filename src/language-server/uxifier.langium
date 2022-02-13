@@ -11,7 +11,7 @@ App:
         '}';
 
 Header: 
-    'header' name=ID title=STRING logo=STRING level=INT;
+    'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT;
 
 Theme:
     'theme' name=ID 
@@ -26,12 +26,15 @@ Color:
     'color' name=ID 'code' code=STRING;
 
 WidgetClassique:
-    'widgetClassique' content=STRING;
+    'widgetClassique' name=ID 'title' title=STRING "icon" icon=STRING 'value' value=INT;
 
-Widget:
-    'widget' '{' 
-        (WidgetClassique) name=ID title=STRING description=STRING 
-    '}';
+// Widget:
+//     'widget' '{' 
+//         (WidgetClassique) name=ID title=STRING description=STRING 
+//     '}';
+
+Widget: 
+    (WidgetClassique);
 
 WidgetWrapper:
     'widgetWrapper' name=ID "width" width=INT '{' 
