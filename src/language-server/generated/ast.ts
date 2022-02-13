@@ -10,12 +10,25 @@ import { AstNode, AstReflection, isAstNode } from 'langium';
 export interface App extends AstNode {
     header: Header
     name: string
+    theme: Theme
 }
 
 export const App = 'App';
 
 export function isApp(item: unknown): item is App {
     return reflection.isInstance(item, App);
+}
+
+export interface Color extends AstNode {
+    readonly $container: Theme;
+    code: string
+    name: string
+}
+
+export const Color = 'Color';
+
+export function isColor(item: unknown): item is Color {
+    return reflection.isInstance(item, Color);
 }
 
 export interface Header extends AstNode {
@@ -43,14 +56,26 @@ export function isPage(item: unknown): item is Page {
     return reflection.isInstance(item, Page);
 }
 
-export type UxifierAstType = 'App' | 'Header' | 'Page';
+export interface Theme extends AstNode {
+    readonly $container: App;
+    colors: Array<Color>
+    name: string
+}
+
+export const Theme = 'Theme';
+
+export function isTheme(item: unknown): item is Theme {
+    return reflection.isInstance(item, Theme);
+}
+
+export type UxifierAstType = 'App' | 'Color' | 'Header' | 'Page' | 'Theme';
 
 export type UxifierAstReference = never;
 
 export class UxifierAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['App', 'Header', 'Page'];
+        return ['App', 'Color', 'Header', 'Page', 'Theme'];
     }
 
     isInstance(node: unknown, type: string): boolean {

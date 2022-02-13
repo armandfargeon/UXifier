@@ -3,6 +3,7 @@ import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
 import { App } from '../language-server/generated/ast';
+import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
     const data = extractDestinationAndName(filePath, destination);
@@ -35,6 +36,7 @@ class GrommetAppGenerator {
             //groomet app generated : ${app.name}
             ${this.dependencies()}
             ${this.headerDeclaration(app)}
+            ${this.defineTheme(app)}
             function App() {
                 return(
                     <Grommet plain>
@@ -44,7 +46,6 @@ class GrommetAppGenerator {
                     </Grommet>
                 );
             }
-
             export default App;
         `;
     }
@@ -56,6 +57,24 @@ class GrommetAppGenerator {
      */
     dependencies(): string{
         return `import { Grommet, Box, Heading } from 'grommet';`;
+    }
+
+    defineTheme(app: App): string{
+        let sb: StringBuilder = new StringBuilder();
+        sb.write(`
+            const ${app.theme.name} = {
+                global: { 
+                    colors: {`);
+        
+        `${app.theme.colors.forEach((c) => { 
+            sb.write(c.name);
+            sb.write(": '");
+            sb.write(c.code);
+            sb.writeln("',");
+        })}`;
+    
+        sb.writeln("}}}");
+        return sb.toString();
     }
 
     generateHeader(app: App): string{

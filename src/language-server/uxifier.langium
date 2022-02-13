@@ -6,6 +6,7 @@ App:
     'app' name=ID 
         '{'
             header=Header
+            theme=Theme
         '}';
 
 Header: 
@@ -13,6 +14,19 @@ Header:
 
 Page: 
     'page' title=STRING onglet=STRING;
+
+Theme:
+    'theme' name=ID 
+        '{'
+            'colors{' 
+                colors+=Color
+                (colors+=Color)*
+            '}'
+        '}';
+
+
+Color:
+    'color' name=ID 'code' code=STRING;
 
 
 terminal WS: /\s+/;

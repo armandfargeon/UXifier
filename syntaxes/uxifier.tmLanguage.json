@@ -10,11 +10,11 @@
     },
     {
       "name": "keyword.control.uxifier",
-      "match": "\\b(app|header|page)\\b"
+      "match": "\\b(app|code|color|colors{|header|page|theme)\\b"
     },
     {
       "name": "keyword.symbol.uxifier",
-      "match": "(\\{|\\})"
+      "match": "(\\{|\\}|\\colors{)"
     }
   ],
   "repository": {

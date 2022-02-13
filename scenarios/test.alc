@@ -1,3 +1,10 @@
 app dsl {
     header AppBar "test" "logo" 3
+    theme myTheme {
+        colors{
+            color black code "#000000"
+            color green code "#00FF00"
+            color white code "#FFFFFF"
+        } 
+    }
 }

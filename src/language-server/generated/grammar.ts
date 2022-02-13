@@ -64,6 +64,18 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
+            "$type": "Assignment",
+            "feature": "theme",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Theme"
+              }
+            }
+          },
+          {
             "$type": "Keyword",
             "value": "}"
           }
@@ -162,6 +174,120 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           {
             "$type": "Assignment",
             "feature": "onglet",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "STRING"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Theme",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "theme",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Keyword",
+            "value": "colors{"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "colors",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Color"
+              }
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "colors",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Color"
+              }
+            },
+            "elements": [],
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Color",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "color",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "code"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "code",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
