@@ -10,11 +10,11 @@
     },
     {
       "name": "keyword.control.uxifier",
-      "match": "\\b(Hello|person)\\b"
+      "match": "\\b(app|header|page)\\b"
     },
     {
       "name": "keyword.symbol.uxifier",
-      "match": "(\\!)"
+      "match": "(\\{|\\})"
     }
   ],
   "repository": {

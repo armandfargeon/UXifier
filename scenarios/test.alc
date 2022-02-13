@@ -1,0 +1,3 @@
+app dsl {
+    header AppBar "test" "logo" 3
+}

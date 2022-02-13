@@ -1,5 +1,5 @@
-import { ValidationAcceptor, ValidationCheck, ValidationRegistry } from 'langium';
-import { UxifierAstType, Person } from './generated/ast';
+import {ValidationCheck, ValidationRegistry } from 'langium';
+import { UxifierAstType } from './generated/ast';
 import { UxifierServices } from './uxifier-module';
 
 /**
@@ -15,7 +15,7 @@ export class UxifierValidationRegistry extends ValidationRegistry {
         super(services);
         const validator = services.validation.UxifierValidator;
         const checks: UxifierChecks = {
-            Person: validator.checkPersonStartsWithCapital
+            //Person: validator.checkPersonStartsWithCapital
         };
         this.register(checks, validator);
     }
@@ -25,14 +25,4 @@ export class UxifierValidationRegistry extends ValidationRegistry {
  * Implementation of custom validations.
  */
 export class UxifierValidator {
-
-    checkPersonStartsWithCapital(person: Person, accept: ValidationAcceptor): void {
-        if (person.name) {
-            const firstChar = person.name.substring(0, 1);
-            if (firstChar.toUpperCase() !== firstChar) {
-                accept('warning', 'Person name should start with a capital.', { node: person, property: 'name' });
-            }
-        }
-    }
-
 }

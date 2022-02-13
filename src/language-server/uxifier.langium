@@ -1,14 +1,19 @@
 grammar Uxifier
 hidden(WS, SL_COMMENT, ML_COMMENT)
 
-Model:
-    (persons+=Person | greetings+=Greeting)*;
 
-Person:
-    'person' name=ID;
+App:
+    'app' name=ID 
+        '{'
+            header=Header
+        '}';
 
-Greeting:
-    'Hello' person=[Person|ID] '!';
+Header: 
+    'header' name=ID title=STRING logo=STRING level=INT;
+
+Page: 
+    'page' title=STRING onglet=STRING;
+
 
 terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

@@ -1,13 +1,13 @@
 import colors from 'colors';
 import { Command } from 'commander';
+import { App } from '../language-server/generated/ast';
 import { languageMetaData } from '../language-server/generated/module';
-import { Model } from '../language-server/generated/ast';
 import { createUxifierServices } from '../language-server/uxifier-module';
 import { extractAstNode } from './cli-util';
 import { generateJavaScript } from './generator';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
-    const model = await extractAstNode<Model>(fileName, languageMetaData.fileExtensions, createUxifierServices());
+    const model = await extractAstNode<App>(fileName, languageMetaData.fileExtensions, createUxifierServices());
     const generatedFilePath = generateJavaScript(model, fileName, opts.destination);
     console.log(colors.green(`JavaScript code generated successfully: ${generatedFilePath}`));
 };

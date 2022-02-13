@@ -5,49 +5,52 @@
 
 /* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
+import { AstNode, AstReflection, isAstNode } from 'langium';
 
-export interface Greeting extends AstNode {
-    readonly $container: Model;
-    person: Reference<Person>
-}
-
-export const Greeting = 'Greeting';
-
-export function isGreeting(item: unknown): item is Greeting {
-    return reflection.isInstance(item, Greeting);
-}
-
-export interface Model extends AstNode {
-    greetings: Array<Greeting>
-    persons: Array<Person>
-}
-
-export const Model = 'Model';
-
-export function isModel(item: unknown): item is Model {
-    return reflection.isInstance(item, Model);
-}
-
-export interface Person extends AstNode {
-    readonly $container: Model;
+export interface App extends AstNode {
+    header: Header
     name: string
 }
 
-export const Person = 'Person';
+export const App = 'App';
 
-export function isPerson(item: unknown): item is Person {
-    return reflection.isInstance(item, Person);
+export function isApp(item: unknown): item is App {
+    return reflection.isInstance(item, App);
 }
 
-export type UxifierAstType = 'Greeting' | 'Model' | 'Person';
+export interface Header extends AstNode {
+    readonly $container: App;
+    level: number
+    logo: string
+    name: string
+    title: string
+}
 
-export type UxifierAstReference = 'Greeting:person';
+export const Header = 'Header';
+
+export function isHeader(item: unknown): item is Header {
+    return reflection.isInstance(item, Header);
+}
+
+export interface Page extends AstNode {
+    onglet: string
+    title: string
+}
+
+export const Page = 'Page';
+
+export function isPage(item: unknown): item is Page {
+    return reflection.isInstance(item, Page);
+}
+
+export type UxifierAstType = 'App' | 'Header' | 'Page';
+
+export type UxifierAstReference = never;
 
 export class UxifierAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Greeting', 'Model', 'Person'];
+        return ['App', 'Header', 'Page'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -67,9 +70,6 @@ export class UxifierAstReflection implements AstReflection {
 
     getReferenceType(referenceId: UxifierAstReference): string {
         switch (referenceId) {
-            case 'Greeting:person': {
-                return Person;
-            }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
             }
