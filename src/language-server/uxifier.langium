@@ -7,13 +7,11 @@ App:
         '{'
             header=Header
             theme=Theme
+            menu=Menu
         '}';
 
 Header: 
     'header' name=ID title=STRING logo=STRING level=INT;
-
-Page: 
-    'page' title=STRING onglet=STRING;
 
 Theme:
     'theme' name=ID 
@@ -24,10 +22,31 @@ Theme:
             '}'
         '}';
 
-
 Color:
     'color' name=ID 'code' code=STRING;
 
+WidgetClassique:
+    'widgetClassique' content=STRING;
+
+Widget:
+    'widget' '{' 
+        (WidgetClassique) name=ID title=STRING description=STRING 
+    '}';
+
+WidgetWrapper:
+    'widgetWrapper' name=ID "width" width=INT '{' 
+        widgets+=Widget 
+    '}';
+
+Page:
+    'page' name=ID title=STRING '{' 
+        widgetWrappers+=WidgetWrapper 
+    '}';
+
+Menu:
+    'menu' name=ID '{' 
+        (pages+=Page)* 
+    '}';
 
 terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

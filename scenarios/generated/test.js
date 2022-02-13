@@ -1,6 +1,6 @@
 
             //groomet app generated : dsl
-            import { Grommet, Box, Heading } from 'grommet';
+            import { Grommet, Box, Heading, Tabs, Tab } from 'grommet';
              const AppBar = (props) => (
             <Box
                 tag='header'
@@ -13,6 +13,15 @@
                 style={{ zIndex: '1' }}
                 {...props}
             />
+        ); 
+             const MyMenu = (props) => (
+        		<Tabs>
+			<Tab title="pageOne">
+			</Tab>
+			<Tab title="pageTwo">
+			</Tab>
+		</Tabs>
+
         ); 
             
             const myTheme = {
@@ -31,6 +40,9 @@ white: '#FFFFFF',
             <Heading level='3' margin='none'>test</Heading>
         </AppBar> 
                         </Box>
+                        
+        <MyMenu></MyMenu> 
+        
                     </Grommet>
                 );
             }

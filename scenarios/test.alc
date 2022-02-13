@@ -7,4 +7,20 @@ app dsl {
             color white code "#FFFFFF"
         } 
     }
+    menu MyMenu {
+        page myPageOne "pageOne" {
+            widgetWrapper widgetWrapperOne width 100 {
+                widget {
+                    widgetClassique "content" widgetOne "Un Widget de la page1" "Widget 1 : Une description de la page1"
+                }
+            }
+        }
+        page myPageOne "pageTwo" {
+            widgetWrapper widgetWrapperOne width 100 {
+                widget {
+                    widgetClassique "content" widgetOne "Un Widget de la Page2" "Une description de la page2"
+                }
+            }
+        }
+    }
 }
