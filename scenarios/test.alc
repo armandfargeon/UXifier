@@ -1,5 +1,4 @@
 app dsl {
-    header AppBar title "test" logo "www.image-url.com" level 3
     theme myTheme {
         colors{
             color black code "#000000"
@@ -7,15 +6,16 @@ app dsl {
             color white code "#FFFFFF"
         } 
     }
+    header AppBar title "test" logo "www.image-url.com" level 3
     menu MyMenu {
         page myPageOne "pageOne" {
             widgetWrapper widgetWrapperOne width 100 {
-               widgetClassique widgetClassique1 title "Statistiques" icon "shorturl.at/osJY4" value 1718
+               widgetClassique statscovid title "Stat Covid" icon "shorturl.at/osJY4" value 1718
             }
         }
         page myPageOne "pageTwo" {
             widgetWrapper widgetWrapperOne width 100 {
-               widgetClassique widgetClassique2 title "Other" icon "other" value 1
+               widgetClassique statlicenciement title "Stat Licenciement" icon "other" value 18
             }
         }
     }

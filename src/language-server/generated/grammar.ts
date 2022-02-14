@@ -53,18 +53,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "header",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "Header"
-              }
-            }
-          },
-          {
-            "$type": "Assignment",
             "feature": "theme",
             "operator": "=",
             "terminal": {
@@ -72,6 +60,18 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               "arguments": [],
               "rule": {
                 "$refText": "Theme"
+              }
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "header",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Header"
               }
             }
           },
@@ -90,82 +90,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           {
             "$type": "Keyword",
             "value": "}"
-          }
-        ]
-      }
-    },
-    {
-      "$type": "ParserRule",
-      "parameters": [],
-      "name": "Header",
-      "hiddenTokens": [],
-      "alternatives": {
-        "$type": "Group",
-        "elements": [
-          {
-            "$type": "Keyword",
-            "value": "header",
-            "elements": []
-          },
-          {
-            "$type": "Assignment",
-            "feature": "name",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "ID"
-              }
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": "title"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "title",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "STRING"
-              }
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": "logo"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "logo",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "STRING"
-              }
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": "level"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "level",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "INT"
-              }
-            }
           }
         ]
       }
@@ -278,6 +202,82 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               "arguments": [],
               "rule": {
                 "$refText": "STRING"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Header",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "header",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "title"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "title",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "STRING"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "logo"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "logo",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "STRING"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "level"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "level",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "INT"
               }
             }
           }

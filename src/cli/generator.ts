@@ -35,6 +35,7 @@ class GrommetAppGenerator {
         return `
             //groomet app generated : ${app.name}
             ${this.dependencies()}
+            ${this.declarationComponents(app)}
             ${this.headerDeclaration(app)}
             ${this.MenuDeclaration(app)}
             ${this.defineTheme(app)}
@@ -58,7 +59,8 @@ class GrommetAppGenerator {
      * //todo le faire dynamiquement
      */
     dependencies(): string{
-        return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text } from 'grommet';`;
+        return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text } from 'grommet'; \n
+                import { statscovid, statlicenciement } from './data/data' \n`;
     }
 
     capitalizeFirstLetter(str: string) {
@@ -183,12 +185,42 @@ class GrommetAppGenerator {
     }
 
     generateWidgetClassic(widget: Widget): string{
+        return "<WidgetClassic data={" + `${widget.name}` + "}/>"
+    }
+
+    declareConst(name: string): string {
+        return "export const " + name + "= ({ data }) => (";
+    }
+
+    generateWidgetClassicComponent(): string {
         let sb: StringBuilder = new StringBuilder();
+        sb.writeln(this.declareConst("WidgetClassic"));
         sb.writeln("<Box round pad=\"medium\" direction=\"column\" background=\"#EEEEEE\"> "); 
         sb.writeln("<Box height=\"xsmall\" width=\"xsmall\">");
-        sb.writeln("<Image fit=\"cover\" src=" + `${'"' + widget.icon + '"'}` + "/> </Box>"); 
-        sb.writeln("<Heading alignSelf=\"center\" level=\"2\" margin=\"none\" size=\"small\"> " + `${widget.title}`+ "</Heading>"); 
-        sb.writeln("<Text alignSelf=\"center\" size=\"90px\" weight=\"bold\">" + `${widget.value}`+ "</Text></Box>"); 
+        sb.writeln("<Image fit=\"cover\" src={data.icon_url}/> </Box>"); 
+        sb.writeln("<Heading alignSelf=\"center\" level=\"2\" margin=\"none\" size=\"small\"> {data.title} </Heading>"); 
+        sb.writeln("<Text alignSelf=\"center\" size=\"90px\" weight=\"bold\"> {data.value} </Text></Box>");
+        sb.write(");");
+        return sb.toString();
+    }
+
+    declarationComponents(app: App): string{
+        let isAlreadyVisited = true;
+        let sb: StringBuilder = new StringBuilder();
+        `${app.menu.pages.forEach((page) => {
+            page.widgetWrappers.forEach((widgetWrapper) => {
+                widgetWrapper.widgets.forEach((widget) => {
+                    switch (widget.$type){
+                        case 'WidgetClassique':
+                            isAlreadyVisited ? sb.write(this.generateWidgetClassicComponent()) : "";
+                            isAlreadyVisited = false;
+                            break;
+                        case 'WidgetHisto':
+                            break;
+                    }
+                })
+            })
+        })}`;
         return sb.toString();
     }
 }

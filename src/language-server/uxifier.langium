@@ -1,18 +1,13 @@
 grammar Uxifier
 hidden(WS, SL_COMMENT, ML_COMMENT)
 
-
 App:
     'app' name=ID 
         '{'
-            header=Header
             theme=Theme
+            header=Header
             menu=Menu
         '}';
-
-Header: 
-    'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT;
-
 Theme:
     'theme' name=ID 
         '{'
@@ -24,6 +19,9 @@ Theme:
 
 Color:
     'color' name=ID 'code' code=STRING;
+
+Header: 
+    'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT;    
 
 WidgetClassique:
     'widgetClassique' name=ID 'title' title=STRING "icon" icon=STRING 'value' value=INT;
