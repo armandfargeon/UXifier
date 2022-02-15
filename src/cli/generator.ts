@@ -2,7 +2,7 @@ import fs from 'fs';
 import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
-import { App, Page, WidgetWrapper, Widget } from '../language-server/generated/ast';
+import { AbstractWidget, App, isChartWidget, isClassicWidget, Page, WidgetWrapper} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
@@ -59,7 +59,8 @@ class GrommetAppGenerator {
      */
     dependencies(): string {
         return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text } from 'grommet'; \n
-                import { statscovid, statlicenciement } from './data/data' \n`;
+                import { LineChart } from 'grommet-controls/chartjs';
+                import { statscovid, statlicenciement, statCasContact } from './data/data' \n`;
     }
 
     capitalizeFirstLetter(str: string) {
@@ -154,72 +155,67 @@ class GrommetAppGenerator {
 
     WidgetWrapperDeclaration(widgetWrapperObj: WidgetWrapper) {
         let widgets = `\t\t\t\t\t<Box name="${widgetWrapperObj.name}" \n width="${widgetWrapperObj.width}"> \n`
-        widgetWrapperObj.widgets.forEach(widgetObj => {
-            widgets += this.generateWidgets(widgetObj)
-        })
+        widgetWrapperObj.widgets.forEach(widget => {
+            widgets += this.generateWidgetTag(widget)
+        });
         widgets += "\n\t\t\t\t\t</Box>\n"
         return widgets;
     }
 
-    WidgetDeclaration(widget?: Widget) {
-        if (widget == undefined) {
-            return ''
-        } else {
-            return `
-            \t\t\t\t\t\t<Box>
-            \t\t\t\t\t\t\t title: ${widget.title}
-            \t\t\t\t\t\t\t description: ${widget.title}
-            \t\t\t\t\t\t</Box>
-            `
-        }
-    }
-
-    generateWidgets(widget: Widget): string {
-        if (`${widget.$type}` === "WidgetClassique") { // widget classic
-            return this.generateWidgetClassic(widget);
-        } else { // others types widget 
-            console.log(widget);
-            return "other type";
-        }
-    }
-
-    generateWidgetClassic(widget: Widget): string {
-        return "<WidgetClassic data={" + `${widget.name}` + "}/>"
+    generateWidgetTag(widget: AbstractWidget): string {
+        return `<${widget.$type} data={ ${widget.name} }/>\n`
     }
 
     declareConst(name: string): string {
         return "export const " + name + "= ({ data }) => (";
     }
 
-    generateWidgetClassicComponent(): string {
+    generateClassicWidgetComponent(): string {
         let sb: StringBuilder = new StringBuilder();
-        sb.writeln(this.declareConst("WidgetClassic"));
+        sb.writeln(this.declareConst("ClassicWidget"));
         sb.writeln("<Box round pad=\"medium\" direction=\"column\" background=\"#EEEEEE\"> ");
         sb.writeln("<Box height=\"xsmall\" width=\"xsmall\">");
         sb.writeln("<Image fit=\"cover\" src={data.icon_url}/> \n </Box>");
         sb.writeln("<Heading alignSelf=\"center\" level=\"2\" margin=\"none\" size=\"small\"> {data.title} </Heading>");
-        sb.writeln("<Text alignSelf=\"center\" size=\"90px\" weight=\"bold\"> {data.value} </Text> \n </Box>");
-        sb.write(");");
+        sb.writeln("<Text alignSelf=\"center\" size=\"90px\" weight=\"bold\"> {data.data} </Text> \n");
+        sb.writeln("<Text alignSelf=\"left\"> {data.description} </Text> \n </Box>");
+        sb.write(");\n \n");
+        return sb.toString();
+    }
+    
+    generateChartWidgetComponent(): string {
+        let sb: StringBuilder = new StringBuilder();
+        sb.writeln(this.declareConst("ChartWidget"));
+        sb.writeln("<Box pad=\"medium\" direction=\"column\" background=\"#EEEEEE\"> ");
+        sb.writeln(`<Heading level={2}>{data.title}</Heading>`)
+        sb.writeln(`<Text alignSelf=\"center\" size=\"20px\" weight=\"bold\"> {data.description} </Text>`);
+        sb.writeln("<LineChart data={data.data} />");
+        sb.writeln("</Box>")
+        sb.writeln(");");
         return sb.toString();
     }
 
     declarationComponents(app: App): string {
-        let widgets: Widget[] = app.menu.pages.map(p =>
-            p.widgetWrappers.flatMap(ww => ww.widgets)
+        let widgets: AbstractWidget[] = app.menu.pages.map(p =>
+            p.widgetWrappers.map(w=>w.widgets).flat()
         ).flat();
 
-        let isAlreadyVisited = true;
+        let typesVisited : string[] = []
+
         let sb: StringBuilder = new StringBuilder();
-        `${widgets.forEach(widget => {
-            switch (widget.$type) {
-                case 'WidgetClassique':
-                    isAlreadyVisited ? sb.write(this.generateWidgetClassicComponent()) : "";
-                    isAlreadyVisited = false;
-                    break;
-                case 'WidgetHisto':
-                    break;
+        widgets.forEach(widget => {            
+            if(isChartWidget(widget)) {
+                if(!typesVisited.includes("ChartWidget")){
+                    typesVisited.push("ChartWidget")
+                    sb.write(this.generateChartWidgetComponent());
+                }
+            } else if(isClassicWidget(widget)){
+                if(!typesVisited.includes("ClassicWidget")){
+                    typesVisited.push("ClassicWidget")
+                    sb.write(this.generateClassicWidgetComponent());
+                }
             }
-        })}`;
+        });
         return sb.toString();
     }
 }

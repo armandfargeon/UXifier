@@ -10,12 +10,13 @@ app dsl {
     menu MyMenu {
         page myPageOne "pageOne" {
             widgetWrapper widgetWrapperOne width 100 {
-               widgetClassique statscovid title "Stat Covid" icon "shorturl.at/osJY4" value 1718
+                classic statscovid icon: "shorturl.at/osJY4"
             }
         }
         page myPageOne "pageTwo" {
             widgetWrapper widgetWrapperOne width 100 {
-               widgetClassique statlicenciement title "Stat Licenciement" icon "other" value 18
+                classic statlicenciement icon: "shorturl.at/osJY4"
+                chart statCasContact x: "nombre de cas" y: "années" 
             }
         }
     }

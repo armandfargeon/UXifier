@@ -23,20 +23,19 @@ Color:
 Header: 
     'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT;    
 
-WidgetClassique:
-    'widgetClassique' name=ID 'title' title=STRING "icon" icon=STRING 'value' value=INT;
+AbstractWidget:
+    ClassicWidget | ChartWidget;
 
-// Widget:
-//     'widget' '{' 
-//         (WidgetClassique) name=ID title=STRING description=STRING 
-//     '}';
+ClassicWidget:
+    'classic' name=ID "icon:" icon=STRING;
 
-Widget: 
-    (WidgetClassique);
+ChartWidget:
+    'chart' name=ID "x:" x_axis=STRING "y:" y_axis=STRING ("filters:" (filters+=STRING ",")*)?;
 
 WidgetWrapper:
     'widgetWrapper' name=ID "width" width=INT '{' 
-        widgets+=Widget 
+        widgets+=AbstractWidget
+        (widgets+=AbstractWidget)*
     '}';
 
 Page:

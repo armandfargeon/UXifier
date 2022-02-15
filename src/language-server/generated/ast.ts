@@ -7,6 +7,17 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { AstNode, AstReflection, isAstNode } from 'langium';
 
+export interface AbstractWidget extends AstNode {
+    readonly $container: WidgetWrapper;
+    name: string
+}
+
+export const AbstractWidget = 'AbstractWidget';
+
+export function isAbstractWidget(item: unknown): item is AbstractWidget {
+    return reflection.isInstance(item, AbstractWidget);
+}
+
 export interface App extends AstNode {
     header: Header
     menu: Menu
@@ -83,24 +94,10 @@ export function isTheme(item: unknown): item is Theme {
     return reflection.isInstance(item, Theme);
 }
 
-export interface Widget extends AstNode {
-    readonly $container: WidgetWrapper;
-    icon: string
-    name: string
-    title: string
-    value: number
-}
-
-export const Widget = 'Widget';
-
-export function isWidget(item: unknown): item is Widget {
-    return reflection.isInstance(item, Widget);
-}
-
 export interface WidgetWrapper extends AstNode {
     readonly $container: Page;
     name: string
-    widgets: Array<Widget>
+    widgets: Array<AbstractWidget>
     width: number
 }
 
@@ -110,23 +107,36 @@ export function isWidgetWrapper(item: unknown): item is WidgetWrapper {
     return reflection.isInstance(item, WidgetWrapper);
 }
 
-export interface WidgetClassique extends Widget {
+export interface ChartWidget extends AbstractWidget {
+    filters: Array<string>
+    x_axis: string
+    y_axis: string
 }
 
-export const WidgetClassique = 'WidgetClassique';
+export const ChartWidget = 'ChartWidget';
 
-export function isWidgetClassique(item: unknown): item is WidgetClassique {
-    return reflection.isInstance(item, WidgetClassique);
+export function isChartWidget(item: unknown): item is ChartWidget {
+    return reflection.isInstance(item, ChartWidget);
 }
 
-export type UxifierAstType = 'App' | 'Color' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'Widget' | 'WidgetWrapper' | 'WidgetClassique';
+export interface ClassicWidget extends AbstractWidget {
+    icon: string
+}
+
+export const ClassicWidget = 'ClassicWidget';
+
+export function isClassicWidget(item: unknown): item is ClassicWidget {
+    return reflection.isInstance(item, ClassicWidget);
+}
+
+export type UxifierAstType = 'AbstractWidget' | 'App' | 'Color' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'WidgetWrapper' | 'ChartWidget' | 'ClassicWidget';
 
 export type UxifierAstReference = never;
 
 export class UxifierAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['App', 'Color', 'Header', 'Menu', 'Page', 'Theme', 'Widget', 'WidgetWrapper', 'WidgetClassique'];
+        return ['AbstractWidget', 'App', 'Color', 'Header', 'Menu', 'Page', 'Theme', 'WidgetWrapper', 'ChartWidget', 'ClassicWidget'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -138,8 +148,9 @@ export class UxifierAstReflection implements AstReflection {
             return true;
         }
         switch (subtype) {
-            case WidgetClassique: {
-                return this.isSubtype(Widget, supertype);
+            case ChartWidget:
+            case ClassicWidget: {
+                return this.isSubtype(AbstractWidget, supertype);
             }
             default: {
                 return false;

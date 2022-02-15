@@ -2,17 +2,29 @@
             //groomet app generated : dsl
             import { Grommet, Box, Heading, Tabs, Tab, Image, Text } from 'grommet'; 
 
-                import { statscovid, statlicenciement } from './data/data' 
+                import { LineChart } from 'grommet-controls/chartjs';
+                import { statscovid, statlicenciement, statCasContact } from './data/data' 
 
-            export const WidgetClassic= ({ data }) => (
+            export const ClassicWidget= ({ data }) => (
 <Box round pad="medium" direction="column" background="#EEEEEE"> 
 <Box height="xsmall" width="xsmall">
 <Image fit="cover" src={data.icon_url}/> 
  </Box>
 <Heading alignSelf="center" level="2" margin="none" size="small"> {data.title} </Heading>
-<Text alignSelf="center" size="90px" weight="bold"> {data.value} </Text> 
+<Text alignSelf="center" size="90px" weight="bold"> {data.data} </Text> 
+
+<Text alignSelf="left"> {data.description} </Text> 
  </Box>
 );
+ 
+export const ChartWidget= ({ data }) => (
+<Box pad="medium" direction="column" background="#EEEEEE"> 
+<Heading level={2}>{data.title}</Heading>
+<Text alignSelf="center" size="20px" weight="bold"> {data.description} </Text>
+<LineChart data={data.data} />
+</Box>
+);
+
              const AppBar = (props) => (
             <Box
                 tag='header'
@@ -31,13 +43,16 @@
 			<Tab  title="pageOne">
 					<Box name="widgetWrapperOne" 
  width="100"> 
-<WidgetClassic data={statscovid}/>
+<ClassicWidget data={ statscovid }/>
+
 					</Box>
 			</Tab>
 			<Tab  title="pageTwo">
 					<Box name="widgetWrapperOne" 
  width="100"> 
-<WidgetClassic data={statlicenciement}/>
+<ClassicWidget data={ statlicenciement }/>
+<ChartWidget data={ statCasContact }/>
+
 					</Box>
 			</Tab>
 		</Tabs>
