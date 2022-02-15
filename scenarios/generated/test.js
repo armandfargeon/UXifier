@@ -1,28 +1,51 @@
 
             //groomet app generated : dsl
-            import { Grommet, Box, Heading, Tabs, Tab, Image, Text } from 'grommet'; 
+            import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph } from 'grommet'; 
 
-                import { LineChart } from 'grommet-controls/chartjs';
-                import { statscovid, statlicenciement, statCasContact } from './data/data' 
+                import { LineChart, PolarChart } from 'grommet-controls/chartjs';
+                import { statscovid, statlicenciement, statCasContact, statParticipation } from './data/data' 
 
             export const ClassicWidget= ({ data }) => (
-<Box round pad="medium" direction="column" background="#EEEEEE"> 
-<Box height="xsmall" width="xsmall">
-<Image fit="cover" src={data.icon_url}/> 
- </Box>
-<Heading alignSelf="center" level="2" margin="none" size="small"> {data.title} </Heading>
+<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row">
+<Box round="5px" background="#FFF" align="center" pad="small" >
+<Box align="center" justify="center" pad="xsmall" margin="xsmall">
+<Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>
+<Paragraph size="small" margin="medium" textAlign="center"> {data.description} </Paragraph>
+
+<Image fit="cover" src={data.icon_url}/>
 <Text alignSelf="center" size="90px" weight="bold"> {data.data} </Text> 
 
-<Text alignSelf="left"> {data.description} </Text> 
- </Box>
+</Box>
+</Box>
+</Box>
+
 );
  
-export const ChartWidget= ({ data }) => (
-<Box pad="medium" direction="column" background="#EEEEEE"> 
-<Heading level={2}>{data.title}</Heading>
-<Text alignSelf="center" size="20px" weight="bold"> {data.description} </Text>
+export const LineChartWidget= ({ data }) => (
+<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row">
+<Box round="5px" background="#FFF" align="center" pad="small" >
+<Box align="center" justify="center" pad="xsmall" margin="xsmall">
+<Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>
+<Paragraph size="small" margin="medium" textAlign="center"> {data.description} </Paragraph>
+
 <LineChart data={data.data} />
 </Box>
+</Box>
+</Box>
+
+);
+export const PolarChartWidget= ({ data }) => (
+<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row">
+<Box round="5px" background="#FFF" align="center" pad="small" >
+<Box align="center" justify="center" pad="xsmall" margin="xsmall">
+<Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>
+<Paragraph size="small" margin="medium" textAlign="center"> {data.description} </Paragraph>
+
+<PolarChart data={data.data} options={data.options} />
+</Box>
+</Box>
+</Box>
+
 );
 
              const AppBar = (props) => (
@@ -51,7 +74,8 @@ export const ChartWidget= ({ data }) => (
 					<Box name="widgetWrapperOne" 
  width="100"> 
 <ClassicWidget data={ statlicenciement }/>
-<ChartWidget data={ statCasContact }/>
+<LineChartWidget data={ statCasContact }/>
+<PolarChartWidget data={ statParticipation }/>
 
 					</Box>
 			</Tab>
@@ -68,7 +92,7 @@ white: '#FFFFFF',
 
             function App() {
                 return(
-                    <Grommet plain>
+                    <Grommet background="#ededed">
                         <Box fill>
                             
         <AppBar>

@@ -9,14 +9,15 @@ app dsl {
     header AppBar title "test" logo "www.image-url.com" level 3
     menu MyMenu {
         page myPageOne "pageOne" {
-            widgetWrapper widgetWrapperOne width 100 {
+            widgetWrapper widgetWrapperOne width: 100 px {
                 classic statscovid icon: "shorturl.at/osJY4"
             }
         }
         page myPageOne "pageTwo" {
-            widgetWrapper widgetWrapperOne width 100 {
+            widgetWrapper widgetWrapperOne width: 100 px {
                 classic statlicenciement icon: "shorturl.at/osJY4"
-                chart statCasContact x: "nombre de cas" y: "années" 
+                linechart statCasContact x: "nombre de cas" y: "années" 
+                polarchart statParticipation 
             }
         }
     }

@@ -2,7 +2,7 @@ import fs from 'fs';
 import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
-import { AbstractWidget, App, isChartWidget, isClassicWidget, Page, WidgetWrapper} from '../language-server/generated/ast';
+import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
@@ -40,7 +40,7 @@ class GrommetAppGenerator {
             ${this.defineTheme(app)}
             function App() {
                 return(
-                    <Grommet plain>
+                    <Grommet background="#ededed">
                         <Box fill>
                             ${this.generateHeader(app)}
                         </Box>
@@ -58,9 +58,9 @@ class GrommetAppGenerator {
      * //todo le faire dynamiquement
      */
     dependencies(): string {
-        return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text } from 'grommet'; \n
-                import { LineChart } from 'grommet-controls/chartjs';
-                import { statscovid, statlicenciement, statCasContact } from './data/data' \n`;
+        return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph } from 'grommet'; \n
+                import { LineChart, PolarChart } from 'grommet-controls/chartjs';
+                import { statscovid, statlicenciement, statCasContact, statParticipation } from './data/data' \n`;
     }
 
     capitalizeFirstLetter(str: string) {
@@ -173,24 +173,48 @@ class GrommetAppGenerator {
     generateClassicWidgetComponent(): string {
         let sb: StringBuilder = new StringBuilder();
         sb.writeln(this.declareConst("ClassicWidget"));
-        sb.writeln("<Box round pad=\"medium\" direction=\"column\" background=\"#EEEEEE\"> ");
-        sb.writeln("<Box height=\"xsmall\" width=\"xsmall\">");
-        sb.writeln("<Image fit=\"cover\" src={data.icon_url}/> \n </Box>");
-        sb.writeln("<Heading alignSelf=\"center\" level=\"2\" margin=\"none\" size=\"small\"> {data.title} </Heading>");
+        sb.writeln(this.generateFirstTagWidgetContainer());
+        sb.writeln("<Image fit=\"cover\" src={data.icon_url}/>");
         sb.writeln("<Text alignSelf=\"center\" size=\"90px\" weight=\"bold\"> {data.data} </Text> \n");
-        sb.writeln("<Text alignSelf=\"left\"> {data.description} </Text> \n </Box>");
+        sb.writeln(this.generateLastTagWidgetContainer());
         sb.write(");\n \n");
         return sb.toString();
     }
     
-    generateChartWidgetComponent(): string {
+    generateLineChartWidgetComponent(): string {
         let sb: StringBuilder = new StringBuilder();
-        sb.writeln(this.declareConst("ChartWidget"));
-        sb.writeln("<Box pad=\"medium\" direction=\"column\" background=\"#EEEEEE\"> ");
-        sb.writeln(`<Heading level={2}>{data.title}</Heading>`)
-        sb.writeln(`<Text alignSelf=\"center\" size=\"20px\" weight=\"bold\"> {data.description} </Text>`);
+        sb.writeln(this.declareConst("LineChartWidget"));
+        sb.writeln(this.generateFirstTagWidgetContainer());
         sb.writeln("<LineChart data={data.data} />");
-        sb.writeln("</Box>")
+        sb.writeln(this.generateLastTagWidgetContainer());
+        sb.writeln(");");
+        return sb.toString();
+    }
+
+    generateFirstTagWidgetContainer(){
+        let sb: StringBuilder = new StringBuilder();
+        sb.writeln('<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row">');
+        sb.writeln('<Box round="5px" background="#FFF" align="center" pad="small" >');
+        sb.writeln('<Box align="center" justify="center" pad="xsmall" margin="xsmall">');   
+        sb.writeln(`<Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>`);
+        sb.writeln(`<Paragraph size="small" margin="medium" textAlign="center"> {data.description} </Paragraph>`);     
+        return sb.toString()
+    }
+
+    generateLastTagWidgetContainer(){
+        let sb: StringBuilder = new StringBuilder();
+        sb.writeln('</Box>');
+        sb.writeln('</Box>');
+        sb.writeln('</Box>');
+        return sb.toString()
+    }
+
+    generatePolarChartWidgetComponent(): string {
+        let sb: StringBuilder = new StringBuilder();
+        sb.writeln(this.declareConst("PolarChartWidget"));
+        sb.writeln(this.generateFirstTagWidgetContainer());
+        sb.writeln("<PolarChart data={data.data} options={data.options} />");
+        sb.writeln(this.generateLastTagWidgetContainer());
         sb.writeln(");");
         return sb.toString();
     }
@@ -203,16 +227,21 @@ class GrommetAppGenerator {
         let typesVisited : string[] = []
 
         let sb: StringBuilder = new StringBuilder();
-        widgets.forEach(widget => {            
-            if(isChartWidget(widget)) {
-                if(!typesVisited.includes("ChartWidget")){
-                    typesVisited.push("ChartWidget")
-                    sb.write(this.generateChartWidgetComponent());
+        widgets.forEach(widget => {        
+            if(isLineChartWidget(widget)) {
+                if(!typesVisited.includes("LineChartWidget")){
+                    typesVisited.push("LineChartWidget")
+                    sb.write(this.generateLineChartWidgetComponent());
                 }
             } else if(isClassicWidget(widget)){
                 if(!typesVisited.includes("ClassicWidget")){
                     typesVisited.push("ClassicWidget")
                     sb.write(this.generateClassicWidgetComponent());
+                }
+            } else if(isPolarChartWidget(widget)){
+                if(!typesVisited.includes("PolarChartWidget")){
+                    typesVisited.push("PolarChartWidget")
+                    sb.write(this.generatePolarChartWidgetComponent());
                 }
             }
         });

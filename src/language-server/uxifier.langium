@@ -24,16 +24,19 @@ Header:
     'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT;    
 
 AbstractWidget:
-    ClassicWidget | ChartWidget;
+    ClassicWidget | LineChartWidget | PolarChartWidget;
 
 ClassicWidget:
     'classic' name=ID "icon:" icon=STRING;
 
-ChartWidget:
-    'chart' name=ID "x:" x_axis=STRING "y:" y_axis=STRING ("filters:" (filters+=STRING ",")*)?;
+LineChartWidget:
+    'linechart' name=ID "x:" x_axis=STRING "y:" y_axis=STRING ("filters:" (filters+=STRING ",")*)?;
+
+PolarChartWidget:
+    'polarchart' name=ID ("filters:" (filters+=STRING ",")*)?;
 
 WidgetWrapper:
-    'widgetWrapper' name=ID "width" width=INT '{' 
+    'widgetWrapper' name=ID "width:" width=INT 'px' '{' 
         widgets+=AbstractWidget
         (widgets+=AbstractWidget)*
     '}';
