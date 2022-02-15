@@ -10,7 +10,7 @@
     },
     {
       "name": "keyword.control.uxifier",
-      "match": "\\b(app|classic|code|color|colors{|filters:|header|icon:|level|linechart|logo|menu|page|polarchart|px|theme|title|widgetWrapper|width:|x:|y:)\\b"
+      "match": "\\b(app|classic|code|color|colors{|columnchart|downloadeable|filters:|header|icon:|level|linechart|logo|menu|page|polarchart|px|theme|title|widgetWrapper|width:|x:|y:)\\b"
     },
     {
       "name": "keyword.symbol.uxifier",

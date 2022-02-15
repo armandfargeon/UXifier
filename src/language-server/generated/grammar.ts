@@ -315,6 +315,14 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               "$refText": "PolarChartWidget"
             },
             "elements": []
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "ColumnChartWidget"
+            },
+            "elements": []
           }
         ]
       }
@@ -351,6 +359,50 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           {
             "$type": "Assignment",
             "feature": "icon",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "STRING"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "ColumnChartWidget",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "columnchart",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "downloadeable"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "downloadeable",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",

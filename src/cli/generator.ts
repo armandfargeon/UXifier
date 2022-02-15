@@ -2,7 +2,7 @@ import fs from 'fs';
 import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
-import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget} from '../language-server/generated/ast';
+import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
@@ -60,7 +60,10 @@ class GrommetAppGenerator {
     dependencies(): string {
         return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph } from 'grommet'; \n
                 import { LineChart, PolarChart } from 'grommet-controls/chartjs';
-                import { statscovid, statlicenciement, statCasContact, statParticipation } from './data/data' \n`;
+                import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data' \n
+                import Typography from "@material-ui/core/Typography"; \n
+                import { Row } from 'reactstrap';\n
+                import Chart from "react-apexcharts";\n`;
     }
 
     capitalizeFirstLetter(str: string) {
@@ -174,8 +177,8 @@ class GrommetAppGenerator {
         let sb: StringBuilder = new StringBuilder();
         sb.writeln(this.declareConst("ClassicWidget"));
         sb.writeln(this.generateFirstTagWidgetContainer());
-        sb.writeln("<Image fit=\"cover\" src={data.icon_url}/>");
         sb.writeln("<Text alignSelf=\"center\" size=\"90px\" weight=\"bold\"> {data.data} </Text> \n");
+        sb.writeln("<Image fit=\"cover\" src={data.icon_url}/>");
         sb.writeln(this.generateLastTagWidgetContainer());
         sb.write(");\n \n");
         return sb.toString();
@@ -219,6 +222,48 @@ class GrommetAppGenerator {
         return sb.toString();
     }
 
+    generateColumnChartWidgetComponent(): string{
+        let sb: StringBuilder = new StringBuilder();
+        sb.writeln(this.declareConst("ColumnChartWidget"));
+        sb.writeln(this.generateFirstTagWidgetContainer());
+        sb.writeln('<div id="chart" className="grommet__container">');
+        sb.writeln('<Box pad="small" elevation="medium">');
+        sb.writeln('<div className="title-chart">');
+        sb.writeln('<Row>');
+        sb.writeln('<Typography variant="h6" className="title-chart">{data.title}</Typography>');
+        sb.writeln('</Row>');
+        sb.writeln('<Typography variant="subtitle1">{data.description}</Typography>');
+        sb.writeln('</div>');
+        sb.writeln('<Chart options={data.options} series={data.series} type="bar" height="300" />');
+        sb.writeln('</Box>\n</div>\n');
+        sb.writeln(this.generateLastTagWidgetContainer());
+        sb.writeln(');');
+        return sb.toString();
+    }
+
+    // <Box direction="column" gap="large">
+    //     <Box round pad="medium" direction="column" background="white">
+    //         <Box gap="small">
+    //             <div id="chart" className="grommet__container">
+    //                 <Box pad="small" elevation="medium">
+    //                     <div className="title-chart">
+    //                         <Row>
+    //                             <Typography variant="h6" className="title-chart">Titre</Typography>
+    //                         </Row>
+    //                         <Typography variant="subtitle1">Description...</Typography>
+    //                     </div>
+    //                     <Chart
+    //                         options={state.options}
+    //                         series={state.series}
+    //                         type="bar"
+    //                         height="300"
+    //                     />
+    //                 </Box>
+    //             </div>
+    //         </Box>
+    //     </Box>
+    // </Box>
+
     declarationComponents(app: App): string {
         let widgets: AbstractWidget[] = app.menu.pages.map(p =>
             p.widgetWrappers.map(w=>w.widgets).flat()
@@ -242,6 +287,11 @@ class GrommetAppGenerator {
                 if(!typesVisited.includes("PolarChartWidget")){
                     typesVisited.push("PolarChartWidget")
                     sb.write(this.generatePolarChartWidgetComponent());
+                }
+            }else if(isColumnChartWidget(widget)){
+                if(!typesVisited.includes("ColumnChartWidget")){
+                    typesVisited.push("ColumnChartWidget")
+                    sb.write(this.generateColumnChartWidgetComponent());
                 }
             }
         });

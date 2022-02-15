@@ -117,6 +117,16 @@ export function isClassicWidget(item: unknown): item is ClassicWidget {
     return reflection.isInstance(item, ClassicWidget);
 }
 
+export interface ColumnChartWidget extends AbstractWidget {
+    downloadeable: string
+}
+
+export const ColumnChartWidget = 'ColumnChartWidget';
+
+export function isColumnChartWidget(item: unknown): item is ColumnChartWidget {
+    return reflection.isInstance(item, ColumnChartWidget);
+}
+
 export interface LineChartWidget extends AbstractWidget {
     filters: Array<string>
     x_axis: string
@@ -139,14 +149,14 @@ export function isPolarChartWidget(item: unknown): item is PolarChartWidget {
     return reflection.isInstance(item, PolarChartWidget);
 }
 
-export type UxifierAstType = 'AbstractWidget' | 'App' | 'Color' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'WidgetWrapper' | 'ClassicWidget' | 'LineChartWidget' | 'PolarChartWidget';
+export type UxifierAstType = 'AbstractWidget' | 'App' | 'Color' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'WidgetWrapper' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
 
 export type UxifierAstReference = never;
 
 export class UxifierAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['AbstractWidget', 'App', 'Color', 'Header', 'Menu', 'Page', 'Theme', 'WidgetWrapper', 'ClassicWidget', 'LineChartWidget', 'PolarChartWidget'];
+        return ['AbstractWidget', 'App', 'Color', 'Header', 'Menu', 'Page', 'Theme', 'WidgetWrapper', 'ClassicWidget', 'ColumnChartWidget', 'LineChartWidget', 'PolarChartWidget'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -159,6 +169,7 @@ export class UxifierAstReflection implements AstReflection {
         }
         switch (subtype) {
             case ClassicWidget:
+            case ColumnChartWidget:
             case LineChartWidget:
             case PolarChartWidget: {
                 return this.isSubtype(AbstractWidget, supertype);

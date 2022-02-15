@@ -24,10 +24,13 @@ Header:
     'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT;    
 
 AbstractWidget:
-    ClassicWidget | LineChartWidget | PolarChartWidget;
+    ClassicWidget | LineChartWidget | PolarChartWidget | ColumnChartWidget;
 
 ClassicWidget:
     'classic' name=ID "icon:" icon=STRING;
+
+ColumnChartWidget:
+    'columnchart' name=ID 'downloadeable' downloadeable=STRING;
 
 LineChartWidget:
     'linechart' name=ID "x:" x_axis=STRING "y:" y_axis=STRING ("filters:" (filters+=STRING ",")*)?;
@@ -55,6 +58,7 @@ terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal INT returns number: /[0-9]+/;
 terminal STRING: /"[^"]*"|'[^']*'/;
+//terminal BOOLEAN: /([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])/;
 
 terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 terminal SL_COMMENT: /\/\/[^\n\r]*/;

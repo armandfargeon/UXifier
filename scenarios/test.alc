@@ -11,6 +11,7 @@ app dsl {
         page myPageOne "pageOne" {
             widgetWrapper widgetWrapperOne width: 100 px {
                 classic statscovid icon: "shorturl.at/osJY4"
+                columnchart statCrypto downloadeable "true"
             }
         }
         page myPageOne "pageTwo" {
