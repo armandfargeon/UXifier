@@ -2,7 +2,7 @@ import fs from 'fs';
 import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
-import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget} from '../language-server/generated/ast';
+import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, PolarChartWidget, ColumnChartWidget, LineChartWidget} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
@@ -61,6 +61,7 @@ class GrommetAppGenerator {
      */
     dependencies(): string {
         return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph } from 'grommet'; \n
+                import { React } from 'react';
                 import { LineChart, PolarChart } from 'grommet-controls/chartjs';
                 import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data' \n
                 import Typography from "@material-ui/core/Typography"; \n
@@ -122,7 +123,17 @@ class GrommetAppGenerator {
         return `${app.menu} ` ? `
         <${this.capitalizeFirstLetter(app.menu.name)}></${this.capitalizeFirstLetter(app.menu.name)}> 
         `:
-            ` "s" `;
+        ` "s" `;
+    }
+
+    generateOptionByWidget(widget: AbstractWidget) {
+        let sb: StringBuilder = new StringBuilder();
+        sb.write("{{ ");
+        if(isPolarChartWidget(widget)) {
+            sb.write(`legend: { position: '${widget.position}' }`)
+        }
+        sb.write(" }}");
+        return sb.toString();
     }
 
     MenuDeclaration(app: App) {
@@ -186,7 +197,7 @@ class GrommetAppGenerator {
         return sb.toString();
     }
     
-    generateLineChartWidgetComponent(): string {
+    generateLineChartWidgetComponent(widget: LineChartWidget): string {
         let sb: StringBuilder = new StringBuilder();
         sb.writeln(this.declareConst("LineChartWidget"));
         sb.writeln(this.generateFirstTagWidgetContainer());
@@ -214,17 +225,17 @@ class GrommetAppGenerator {
         return sb.toString()
     }
 
-    generatePolarChartWidgetComponent(): string {
+    generatePolarChartWidgetComponent(widget: PolarChartWidget): string {
         let sb: StringBuilder = new StringBuilder();
         sb.writeln(this.declareConst("PolarChartWidget"));
         sb.writeln(this.generateFirstTagWidgetContainer());
-        sb.writeln("<PolarChart data={data.data} options={data.options} />");
+        sb.writeln(`<PolarChart data={data.data} options=${this.generateOptionByWidget(widget)} />`);
         sb.writeln(this.generateLastTagWidgetContainer());
         sb.writeln(");");
         return sb.toString();
     }
 
-    generateColumnChartWidgetComponent(): string{
+    generateColumnChartWidgetComponent(widget: ColumnChartWidget): string{
         let sb: StringBuilder = new StringBuilder();
         sb.writeln(this.declareConst("ColumnChartWidget"));
         sb.writeln(this.generateFirstTagWidgetContainer());
@@ -255,7 +266,7 @@ class GrommetAppGenerator {
             if(isLineChartWidget(widget)) {
                 if(!typesVisited.includes("LineChartWidget")){
                     typesVisited.push("LineChartWidget")
-                    sb.write(this.generateLineChartWidgetComponent());
+                    sb.write(this.generateLineChartWidgetComponent(widget));
                 }
             } else if(isClassicWidget(widget)){
                 if(!typesVisited.includes("ClassicWidget")){
@@ -265,12 +276,12 @@ class GrommetAppGenerator {
             } else if(isPolarChartWidget(widget)){
                 if(!typesVisited.includes("PolarChartWidget")){
                     typesVisited.push("PolarChartWidget")
-                    sb.write(this.generatePolarChartWidgetComponent());
+                    sb.write(this.generatePolarChartWidgetComponent(widget));
                 }
             }else if(isColumnChartWidget(widget)){
                 if(!typesVisited.includes("ColumnChartWidget")){
                     typesVisited.push("ColumnChartWidget")
-                    sb.write(this.generateColumnChartWidgetComponent());
+                    sb.write(this.generateColumnChartWidgetComponent(widget));
                 }
             }
         });

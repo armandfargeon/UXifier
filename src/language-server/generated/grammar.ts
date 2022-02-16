@@ -272,24 +272,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "$refText": "INT"
               }
             }
-          },
-          {
-            "$type": "Assignment",
-            "feature": "color",
-            "operator": "=",
-            "terminal": {
-              "$type": "CrossReference",
-              "type": {
-                "$refText": "Color"
-              },
-              "terminal": {
-                "$type": "RuleCall",
-                "arguments": [],
-                "rule": {
-                  "$refText": "FQN"
-                }
-              }
-            }
           }
         ]
       }
@@ -449,72 +431,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "$refText": "ID"
               }
             }
-          },
-          {
-            "$type": "Keyword",
-            "value": "x:"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "x_axis",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "STRING"
-              }
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": "y:"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "y_axis",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "STRING"
-              }
-            }
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": "filters:",
-                "elements": []
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Assignment",
-                    "feature": "filters",
-                    "operator": "+=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "arguments": [],
-                      "rule": {
-                        "$refText": "STRING"
-                      }
-                    },
-                    "elements": []
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": ","
-                  }
-                ],
-                "cardinality": "*"
-              }
-            ],
-            "cardinality": "?"
           }
         ]
       }
@@ -545,38 +461,36 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": "filters:",
-                "elements": []
-              },
-              {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Assignment",
-                    "feature": "filters",
-                    "operator": "+=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "arguments": [],
-                      "rule": {
-                        "$refText": "STRING"
-                      }
-                    },
-                    "elements": []
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": ","
-                  }
-                ],
-                "cardinality": "*"
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Keyword",
+            "value": "filters{"
+          },
+          {
+            "$type": "Keyword",
+            "value": "position"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "position",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "STRING"
               }
-            ],
-            "cardinality": "?"
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
           }
         ]
       }

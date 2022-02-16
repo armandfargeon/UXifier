@@ -18,9 +18,9 @@ Theme:
 
 Color:
     'color' name=ID 'code' code=STRING;
-
+//color=[Color|FQN]
 Header: 
-    'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT color=[Color|FQN]; 
+    'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT ; 
 
 AbstractWidget:
     ClassicWidget | LineChartWidget | PolarChartWidget | ColumnChartWidget;
@@ -32,10 +32,14 @@ ColumnChartWidget:
     'columnchart' name=ID 'downloadeable' downloadeable=STRING;
 
 LineChartWidget:
-    'linechart' name=ID "x:" x_axis=STRING "y:" y_axis=STRING ("filters:" (filters+=STRING ",")*)?;
+    'linechart' name=ID;
 
 PolarChartWidget:
-    'polarchart' name=ID ("filters:" (filters+=STRING ",")*)?;
+    'polarchart' name=ID "{"
+        "filters{"
+            "position" position=STRING
+        "}"
+    "}";
 
 WidgetWrapper:
     'widgetWrapper' name=ID "width:" width=INT 'px' '{' 

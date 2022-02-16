@@ -2,6 +2,7 @@
 //groomet app generated : dsl
 import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph } from 'grommet';
 
+import { React } from 'react';
 import { LineChart, PolarChart } from 'grommet-controls/chartjs';
 import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data'
 
@@ -58,7 +59,7 @@ export const LineChartWidget = ({ data }) => (
                 <Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>
                 <Paragraph size="small" margin="medium" textAlign="center"> {data.description} </Paragraph>
 
-                <LineChart data={data.data} />
+                <LineChart data={data.data} options={{ legend: { position: 'left' } }} />
             </Box>
         </Box>
     </Box>
@@ -71,7 +72,7 @@ export const PolarChartWidget = ({ data }) => (
                 <Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>
                 <Paragraph size="small" margin="medium" textAlign="center"> {data.description} </Paragraph>
 
-                <PolarChart data={data.data} options={data.options} />
+                <PolarChart data={data.data} options={{ legend: { position: 'left' } }} />
             </Box>
         </Box>
     </Box>

@@ -7,7 +7,7 @@ app dsl {
             color graylight code "#ededed"
         } 
     }
-    header AppBar title "test" logo "www.image-url.com" level 3 myTheme.green
+    header AppBar title "test" logo "www.image-url.com" level 3
     menu MyMenu {
         page myPageOne "pageOne" {
             widgetWrapper widgetWrapperOne width: 100 px {
@@ -18,8 +18,12 @@ app dsl {
         page myPageOne "pageTwo" {
             widgetWrapper widgetWrapperOne width: 100 px {
                 classic statlicenciement icon: "shorturl.at/osJY4"
-                linechart statCasContact x: "nombre de cas" y: "années" 
-                polarchart statParticipation 
+                linechart statCasContact
+                polarchart statParticipation { 
+                    filters{
+                        position "left" 
+                    }
+                }
             }
         }
     }

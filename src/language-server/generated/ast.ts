@@ -5,7 +5,7 @@
 
 /* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
+import { AstNode, AstReflection, isAstNode } from 'langium';
 
 export interface AbstractWidget extends AstNode {
     readonly $container: WidgetWrapper;
@@ -54,7 +54,6 @@ export function isFQN(item: unknown): item is FQN {
 
 export interface Header extends AstNode {
     readonly $container: App;
-    color: Reference<Color>
     level: number
     logo: string
     name: string
@@ -138,9 +137,6 @@ export function isColumnChartWidget(item: unknown): item is ColumnChartWidget {
 }
 
 export interface LineChartWidget extends AbstractWidget {
-    filters: Array<string>
-    x_axis: string
-    y_axis: string
 }
 
 export const LineChartWidget = 'LineChartWidget';
@@ -150,7 +146,7 @@ export function isLineChartWidget(item: unknown): item is LineChartWidget {
 }
 
 export interface PolarChartWidget extends AbstractWidget {
-    filters: Array<string>
+    position: string
 }
 
 export const PolarChartWidget = 'PolarChartWidget';
@@ -161,7 +157,7 @@ export function isPolarChartWidget(item: unknown): item is PolarChartWidget {
 
 export type UxifierAstType = 'AbstractWidget' | 'App' | 'Color' | 'FQN' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'WidgetWrapper' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
 
-export type UxifierAstReference = 'Header:color';
+export type UxifierAstReference = never;
 
 export class UxifierAstReflection implements AstReflection {
 
@@ -192,9 +188,6 @@ export class UxifierAstReflection implements AstReflection {
 
     getReferenceType(referenceId: UxifierAstReference): string {
         switch (referenceId) {
-            case 'Header:color': {
-                return Color;
-            }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
             }
