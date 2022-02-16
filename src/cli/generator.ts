@@ -8,14 +8,9 @@ import { StringBuilder } from '../utils/StringBuilder';
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
     const data = extractDestinationAndName(filePath, destination);
     const generatedFilePath = `${path.join(data.destination, data.name)}.js`;
-
     const fileNode = new CompositeGeneratorNode();
-
     const grommetAppGenerator = new GrommetAppGenerator();
-
-    fileNode.append(grommetAppGenerator.compile(app));
-
-    //model.greetings.forEach(greeting => fileNode.append(`console.log('Hello, ${greeting.person.$refText}!');`, NL));
+    fileNode.append(grommetAppGenerator.compile(app, data.destination + "/components"));
 
     if (!fs.existsSync(data.destination)) {
         fs.mkdirSync(data.destination, { recursive: true });
@@ -30,16 +25,24 @@ class GrommetAppGenerator {
      * @param app 
      * @returns code generated (app.js)
      */
-    compile(app: App): string {
+    compile(app: App, destination: string): string {
         return `
             //groomet app generated : ${app.name}
-            ${this.dependencies()}
-            ${this.declarationComponents(app)}
+            ${this.dependencies(false)}
+            ${this.declarationComponents(app, destination)}
             ${this.headerDeclaration(app)}
             ${this.MenuDeclaration(app)}
             ${this.defineTheme(app)}
             ${this.generateApp(app)}
         `;
+    }
+
+    componentsFiles(p:string, node:CompositeGeneratorNode, nameComponent: string){
+        const generatedFilePath = `${path.join(p, nameComponent)}.js`;
+        if (!fs.existsSync(p)) {
+            fs.mkdirSync(p, { recursive: true });
+        }
+        fs.writeFileSync(generatedFilePath, processGeneratorNode(node));
     }
 
     generateApp(app: App): string{
@@ -54,19 +57,29 @@ class GrommetAppGenerator {
         return sb.toString()
     }
 
+
     /**
      * Define dependencies
      * @returns dependencies as a string 
      * //todo le faire dynamiquement
      */
-    dependencies(): string {
-        return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph } from 'grommet'; \n
-                import { React } from 'react';
-                import { LineChart, PolarChart } from 'grommet-controls/chartjs';
-                import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data' \n
-                import Typography from "@material-ui/core/Typography"; \n
-                import { Row } from 'reactstrap';\n
-                import Chart from "react-apexcharts";\n`;
+    dependencies(isForComponents: boolean): string {
+        let dependencies: StringBuilder = new StringBuilder();
+        dependencies.writeln("import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph } from 'grommet';");
+        dependencies.writeln("import { LineChart, PolarChart } from 'grommet-controls/chartjs';");
+        dependencies.writeln('import Typography from "@material-ui/core/Typography";');
+        dependencies.writeln("import { Row } from 'reactstrap';");
+        dependencies.writeln('import Chart from "react-apexcharts";');
+        dependencies.writeln("import { React } from 'react'");
+        ;
+        if(!isForComponents){
+            dependencies.writeln("import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data'")
+            dependencies.writeln("import {ClassicWidget} from './components';\n");
+            dependencies.writeln("import {ColumnChartWidget} from './components';\n");
+            dependencies.writeln("import {LineChartWidget} from './components';\n");
+            dependencies.writeln("import {PolarChartWidget} from './components';\n");
+        }
+        return dependencies.toString();
     }
 
     capitalizeFirstLetter(str: string) {
@@ -105,7 +118,7 @@ class GrommetAppGenerator {
     headerDeclaration(app: App): string {
         return `${app.header}` ? ` const ${this.capitalizeFirstLetter(app.header.name)} = (props) => (
             <Box
-                tag='header'
+                tag='header'    
                 direction='row'
                 align='center'
                 justify='between'
@@ -254,34 +267,40 @@ class GrommetAppGenerator {
         return sb.toString();
     }
 
-    declarationComponents(app: App): string {
+    populateNode(node: CompositeGeneratorNode, component: string, body: string, visited: string[], destination: string){
+        visited.push(component);
+        node.append(this.dependencies(true));
+        node.append(body);
+        this.componentsFiles(destination, node, component);
+    }
+
+    declarationComponents(app: App, destination: string): string {
         let widgets: AbstractWidget[] = app.menu.pages.map(p =>
             p.widgetWrappers.map(w=>w.widgets).flat()
         ).flat();
 
-        let typesVisited : string[] = []
-
+        let typesVisited : string[] = [];
         let sb: StringBuilder = new StringBuilder();
         widgets.forEach(widget => {        
             if(isLineChartWidget(widget)) {
                 if(!typesVisited.includes("LineChartWidget")){
-                    typesVisited.push("LineChartWidget")
-                    sb.write(this.generateLineChartWidgetComponent(widget));
+                    const lineNode = new CompositeGeneratorNode();
+                    this.populateNode(lineNode, "LineChartWidget", this.generateLineChartWidgetComponent(), typesVisited, destination);
                 }
             } else if(isClassicWidget(widget)){
                 if(!typesVisited.includes("ClassicWidget")){
-                    typesVisited.push("ClassicWidget")
-                    sb.write(this.generateClassicWidgetComponent());
+                    const classicNode = new CompositeGeneratorNode();
+                    this.populateNode(classicNode, "ClassicWidget", this.generateClassicWidgetComponent(), typesVisited, destination);
                 }
             } else if(isPolarChartWidget(widget)){
                 if(!typesVisited.includes("PolarChartWidget")){
-                    typesVisited.push("PolarChartWidget")
-                    sb.write(this.generatePolarChartWidgetComponent(widget));
+                    const polarNode = new CompositeGeneratorNode();
+                    this.populateNode(polarNode, "PolarChartWidget", this.generatePolarChartWidgetComponent(), typesVisited, destination);
                 }
             }else if(isColumnChartWidget(widget)){
                 if(!typesVisited.includes("ColumnChartWidget")){
-                    typesVisited.push("ColumnChartWidget")
-                    sb.write(this.generateColumnChartWidgetComponent(widget));
+                    const columnNode = new CompositeGeneratorNode();
+                    this.populateNode(columnNode, "ColumnChartWidget", this.generateColumnChartWidgetComponent(), typesVisited, destination);
                 }
             }
         });
