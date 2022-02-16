@@ -30,7 +30,7 @@ ClassicWidget:
 
 ColumnChartWidget:
     'columnchart' name=ID
-        ("{" ("filters" "on" "the" position=Position)? ('downloadeable' downloadeable=STRING)? "}")?;
+        ("{" ("filters" "on" "the" position=Position)? ("column" "width" "measures" columnWidth=STRING)? ('downloadeable' downloadeable=STRING)? "}")?;
 
 LineChartWidget:
     'linechart' name=ID 

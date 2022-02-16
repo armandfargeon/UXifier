@@ -127,6 +127,7 @@ export function isClassicWidget(item: unknown): item is ClassicWidget {
 }
 
 export interface ColumnChartWidget extends AbstractWidget {
+    columnWidth: string
     downloadeable: string
     position: Position
 }

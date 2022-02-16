@@ -13,7 +13,7 @@ export const LineChartWidget= ({ data }) => (
 
 <LineChart options={{ legend: { 
             position: 'left',
-         } }} data={data.data} />
+         }, }} data={data.data} />
 </Box>
 </Box>
 </Box>

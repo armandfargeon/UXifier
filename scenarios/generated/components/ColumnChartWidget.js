@@ -19,9 +19,9 @@ export const ColumnChartWidget= ({ data }) => (
 </Row>
 <Typography variant="subtitle1">{data.description}</Typography>
 </div>
-<Chart options={{ legend: { 
+<Chart options={{ plotOptions: { bar: { columnWidth: '45%'} }, xaxis: { categories: ['']},legend: { 
             position: 'left',
-         } }} series={data.series} type="bar" height="300" />
+         }, }} series={data.series} type="bar" height="300" />
 </Box>
 </div>
 

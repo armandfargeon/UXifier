@@ -434,6 +434,37 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "elements": [
                   {
                     "$type": "Keyword",
+                    "value": "column",
+                    "elements": []
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "width"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "measures"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "columnWidth",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "STRING"
+                      }
+                    }
+                  }
+                ],
+                "cardinality": "?"
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
                     "value": "downloadeable",
                     "elements": []
                   },

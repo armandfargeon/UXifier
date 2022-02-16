@@ -116,15 +116,14 @@ class GrommetAppGenerator {
     }
 
     headerDeclaration(app: App): string {
-        let colorTheme : Color|undefined = this.findColorHeader(app)
-        
+        let colorTheme : Color|undefined = this.findColorHeader(app)        
         return `${app.header}` ? ` const ${this.capitalizeFirstLetter(app.header.name)} = (props) => (
             <Box
                 tag='header'    
                 direction='row'
                 align='center'
                 justify='between'
-                background='${colorTheme?.name}'
+                background='${colorTheme?.code}'
                 pad={{ left: 'medium', right: 'small', vertical: 'small' }}
                 elevation='medium'
                 style={{ zIndex: '1' }}
@@ -204,13 +203,14 @@ class GrommetAppGenerator {
         sb.write("{{ ");
         if(isPolarChartWidget(widget) && (widget.position)) {
             let objOptions = {legend_position: widget.position}
-            sb.write(`themedData: true, legend: { ${this.generatePosition(objOptions)} }`)
+            sb.write(`themedData: true, legend: { ${this.generatePosition(objOptions)} },`)
         } else if(isLineChartWidget(widget) && (widget.position)) {
             let objOptions = {legend_position: widget.position}
-            sb.write(`legend: { ${this.generatePosition(objOptions)} }`)
+            sb.write(`legend: { ${this.generatePosition(objOptions)} },`)
         } else if(isColumnChartWidget(widget) && (widget.position)) {
-            let objOptions = {legend_position: widget.position}
-            sb.write(`legend: { ${this.generatePosition(objOptions)} }`)
+            let objOptions = {legend_position: widget.position, column_width: widget.columnWidth}
+            sb.write(`plotOptions: { bar: { columnWidth: '${objOptions.column_width}'} }, xaxis: { categories: ['']},`)
+            sb.write(`legend: { ${this.generatePosition(objOptions)} },`)
         } 
         sb.write(" }}");
         return sb.toString();
