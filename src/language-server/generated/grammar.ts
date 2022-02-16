@@ -272,6 +272,24 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "$refText": "INT"
               }
             }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "color",
+            "operator": "=",
+            "terminal": {
+              "$type": "CrossReference",
+              "type": {
+                "$refText": "Color"
+              },
+              "terminal": {
+                "$type": "RuleCall",
+                "arguments": [],
+                "rule": {
+                  "$refText": "FQN"
+                }
+              }
+            }
           }
         ]
       }
@@ -343,22 +361,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "$refText": "ID"
               }
             }
-          },
-          {
-            "$type": "Keyword",
-            "value": "icon:"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "icon",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "STRING"
-              }
-            }
           }
         ]
       }
@@ -389,20 +391,73 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
-            "$type": "Keyword",
-            "value": "downloadeable"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "downloadeable",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "STRING"
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "{",
+                "elements": []
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "filters",
+                    "elements": []
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "on"
+                  },
+                  {
+                    "$type": "Keyword",
+                    "value": "the"
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "position",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "Position"
+                      }
+                    }
+                  }
+                ],
+                "cardinality": "?"
+              },
+              {
+                "$type": "Group",
+                "elements": [
+                  {
+                    "$type": "Keyword",
+                    "value": "downloadeable",
+                    "elements": []
+                  },
+                  {
+                    "$type": "Assignment",
+                    "feature": "downloadeable",
+                    "operator": "=",
+                    "terminal": {
+                      "$type": "RuleCall",
+                      "arguments": [],
+                      "rule": {
+                        "$refText": "STRING"
+                      }
+                    }
+                  }
+                ],
+                "cardinality": "?"
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
               }
-            }
+            ],
+            "cardinality": "?"
           }
         ]
       }
@@ -431,6 +486,45 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "$refText": "ID"
               }
             }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "{",
+                "elements": []
+              },
+              {
+                "$type": "Keyword",
+                "value": "filters"
+              },
+              {
+                "$type": "Keyword",
+                "value": "on"
+              },
+              {
+                "$type": "Keyword",
+                "value": "the"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "position",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "Position"
+                  }
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
+              }
+            ],
+            "cardinality": "?"
           }
         ]
       }
@@ -461,36 +555,43 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
-            "$type": "Keyword",
-            "value": "{"
-          },
-          {
-            "$type": "Keyword",
-            "value": "filters{"
-          },
-          {
-            "$type": "Keyword",
-            "value": "position"
-          },
-          {
-            "$type": "Assignment",
-            "feature": "position",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "STRING"
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "{",
+                "elements": []
+              },
+              {
+                "$type": "Keyword",
+                "value": "filters"
+              },
+              {
+                "$type": "Keyword",
+                "value": "on"
+              },
+              {
+                "$type": "Keyword",
+                "value": "the"
+              },
+              {
+                "$type": "Assignment",
+                "feature": "position",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "Position"
+                  }
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "}"
               }
-            }
-          },
-          {
-            "$type": "Keyword",
-            "value": "}"
-          },
-          {
-            "$type": "Keyword",
-            "value": "}"
+            ],
+            "cardinality": "?"
           }
         ]
       }
@@ -724,6 +825,38 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               }
             ],
             "cardinality": "*"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Position",
+      "hiddenTokens": [],
+      "type": "string",
+      "alternatives": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "left",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "top",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "bottom",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "right",
+            "elements": []
           }
         ]
       }

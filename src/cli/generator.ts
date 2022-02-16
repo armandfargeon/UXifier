@@ -74,10 +74,10 @@ class GrommetAppGenerator {
         ;
         if(!isForComponents){
             dependencies.writeln("import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data'")
-            dependencies.writeln("import {ClassicWidget} from './components';\n");
-            dependencies.writeln("import {ColumnChartWidget} from './components';\n");
-            dependencies.writeln("import {LineChartWidget} from './components';\n");
-            dependencies.writeln("import {PolarChartWidget} from './components';\n");
+            dependencies.writeln("import {ClassicWidget} from './components/ClassicWidget';\n");
+            dependencies.writeln("import {ColumnChartWidget} from './components/ColumnChartWidget';\n");
+            dependencies.writeln("import {LineChartWidget} from './components/LineChartWidget';\n");
+            dependencies.writeln("import {PolarChartWidget} from './components/PolarChartWidget';\n");
         }
         return dependencies.toString();
     }
@@ -139,16 +139,6 @@ class GrommetAppGenerator {
         ` "s" `;
     }
 
-    generateOptionByWidget(widget: AbstractWidget) {
-        let sb: StringBuilder = new StringBuilder();
-        sb.write("{{ ");
-        if(isPolarChartWidget(widget)) {
-            sb.write(`legend: { position: '${widget.position}' }`)
-        }
-        sb.write(" }}");
-        return sb.toString();
-    }
-
     MenuDeclaration(app: App) {
         return `${app.menu}` ? ` const ${app.menu.name} = (props) => (
         ${this.pagesDeclaration(app.menu.pages)}
@@ -199,6 +189,31 @@ class GrommetAppGenerator {
         return "export const " + name + "= ({ data }) => (";
     }
 
+    generatePosition(objOptions:any){
+        let sb: StringBuilder = new StringBuilder();
+        sb.write(`
+            ${objOptions.legend_position ? `position: '${objOptions.legend_position}',` : ""}
+        `);
+        return sb;
+    }
+
+    generateOptionByWidget(widget: AbstractWidget) {
+        let sb: StringBuilder = new StringBuilder();
+        sb.write("{{ ");
+        if(isPolarChartWidget(widget) && (widget.position)) {
+            let objOptions = {legend_position: widget.position}
+            sb.write(`themedData: true, legend: { ${this.generatePosition(objOptions)} }`)
+        } else if(isLineChartWidget(widget) && (widget.position)) {
+            let objOptions = {legend_position: widget.position}
+            sb.write(`legend: { ${this.generatePosition(objOptions)} }`)
+        } else if(isColumnChartWidget(widget) && (widget.position)) {
+            let objOptions = {legend_position: widget.position}
+            sb.write(`legend: { ${this.generatePosition(objOptions)} }`)
+        } 
+        sb.write(" }}");
+        return sb.toString();
+    }
+
     generateClassicWidgetComponent(): string {
         let sb: StringBuilder = new StringBuilder();
         sb.writeln(this.declareConst("ClassicWidget"));
@@ -214,7 +229,7 @@ class GrommetAppGenerator {
         let sb: StringBuilder = new StringBuilder();
         sb.writeln(this.declareConst("LineChartWidget"));
         sb.writeln(this.generateFirstTagWidgetContainer());
-        sb.writeln("<LineChart data={data.data} />");
+        sb.writeln(`<LineChart options=${this.generateOptionByWidget(widget)} data={data.data} />`);
         sb.writeln(this.generateLastTagWidgetContainer());
         sb.writeln(");");
         return sb.toString();
@@ -260,7 +275,7 @@ class GrommetAppGenerator {
         sb.writeln('</Row>');
         sb.writeln('<Typography variant="subtitle1">{data.description}</Typography>');
         sb.writeln('</div>');
-        sb.writeln('<Chart options={data.options} series={data.series} type="bar" height="300" />');
+        sb.writeln(`<Chart options=${this.generateOptionByWidget(widget)} series={data.series} type="bar" height="300" />`);
         sb.writeln('</Box>\n</div>\n');
         sb.writeln(this.generateLastTagWidgetContainer());
         sb.writeln(');');
@@ -285,7 +300,7 @@ class GrommetAppGenerator {
             if(isLineChartWidget(widget)) {
                 if(!typesVisited.includes("LineChartWidget")){
                     const lineNode = new CompositeGeneratorNode();
-                    this.populateNode(lineNode, "LineChartWidget", this.generateLineChartWidgetComponent(), typesVisited, destination);
+                    this.populateNode(lineNode, "LineChartWidget", this.generateLineChartWidgetComponent(widget), typesVisited, destination);
                 }
             } else if(isClassicWidget(widget)){
                 if(!typesVisited.includes("ClassicWidget")){
@@ -295,12 +310,12 @@ class GrommetAppGenerator {
             } else if(isPolarChartWidget(widget)){
                 if(!typesVisited.includes("PolarChartWidget")){
                     const polarNode = new CompositeGeneratorNode();
-                    this.populateNode(polarNode, "PolarChartWidget", this.generatePolarChartWidgetComponent(), typesVisited, destination);
+                    this.populateNode(polarNode, "PolarChartWidget", this.generatePolarChartWidgetComponent(widget), typesVisited, destination);
                 }
             }else if(isColumnChartWidget(widget)){
                 if(!typesVisited.includes("ColumnChartWidget")){
                     const columnNode = new CompositeGeneratorNode();
-                    this.populateNode(columnNode, "ColumnChartWidget", this.generateColumnChartWidgetComponent(), typesVisited, destination);
+                    this.populateNode(columnNode, "ColumnChartWidget", this.generateColumnChartWidgetComponent(widget), typesVisited, destination);
                 }
             }
         });

@@ -10,11 +10,11 @@
     },
     {
       "name": "keyword.control.uxifier",
-      "match": "\\b(app|classic|code|color|colors|columnchart|downloadeable|filters{|header|icon:|level|linechart|logo|menu|page|polarchart|position|px|theme|title|widgetWrapper|width:)\\b"
+      "match": "\\b(app|bottom|classic|code|color|colors|columnchart|downloadeable|filters|header|left|level|linechart|logo|menu|on|page|polarchart|px|right|the|theme|title|top|widgetWrapper|width:)\\b"
     },
     {
       "name": "keyword.symbol.uxifier",
-      "match": "(\\.|\\{|\\}|\\filters{|\\icon:|\\width:)"
+      "match": "(\\.|\\{|\\}|\\width:)"
     }
   ],
   "repository": {

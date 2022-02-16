@@ -5,7 +5,7 @@
 
 /* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { AstNode, AstReflection, isAstNode } from 'langium';
+import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
 
 export interface AbstractWidget extends AstNode {
     readonly $container: WidgetWrapper;
@@ -54,6 +54,7 @@ export function isFQN(item: unknown): item is FQN {
 
 export interface Header extends AstNode {
     readonly $container: App;
+    color: Reference<Color>
     level: number
     logo: string
     name: string
@@ -117,7 +118,6 @@ export function isWidgetWrapper(item: unknown): item is WidgetWrapper {
 }
 
 export interface ClassicWidget extends AbstractWidget {
-    icon: string
 }
 
 export const ClassicWidget = 'ClassicWidget';
@@ -128,6 +128,7 @@ export function isClassicWidget(item: unknown): item is ClassicWidget {
 
 export interface ColumnChartWidget extends AbstractWidget {
     downloadeable: string
+    position: Position
 }
 
 export const ColumnChartWidget = 'ColumnChartWidget';
@@ -137,6 +138,7 @@ export function isColumnChartWidget(item: unknown): item is ColumnChartWidget {
 }
 
 export interface LineChartWidget extends AbstractWidget {
+    position: Position
 }
 
 export const LineChartWidget = 'LineChartWidget';
@@ -146,7 +148,7 @@ export function isLineChartWidget(item: unknown): item is LineChartWidget {
 }
 
 export interface PolarChartWidget extends AbstractWidget {
-    position: string
+    position: Position
 }
 
 export const PolarChartWidget = 'PolarChartWidget';
@@ -155,9 +157,11 @@ export function isPolarChartWidget(item: unknown): item is PolarChartWidget {
     return reflection.isInstance(item, PolarChartWidget);
 }
 
+export type Position = 'left' | 'top' | 'bottom' | 'right'
+
 export type UxifierAstType = 'AbstractWidget' | 'App' | 'Color' | 'FQN' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'WidgetWrapper' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
 
-export type UxifierAstReference = never;
+export type UxifierAstReference = 'Header:color';
 
 export class UxifierAstReflection implements AstReflection {
 
@@ -188,6 +192,9 @@ export class UxifierAstReflection implements AstReflection {
 
     getReferenceType(referenceId: UxifierAstReference): string {
         switch (referenceId) {
+            case 'Header:color': {
+                return Color;
+            }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
             }

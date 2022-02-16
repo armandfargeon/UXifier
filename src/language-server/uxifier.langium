@@ -18,28 +18,28 @@ Theme:
 
 Color:
     'color' name=ID 'code' code=STRING;
-//color=[Color|FQN]
+
 Header: 
-    'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT ; 
+    'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT color=[Color|FQN]; 
 
 AbstractWidget:
     ClassicWidget | LineChartWidget | PolarChartWidget | ColumnChartWidget;
 
 ClassicWidget:
-    'classic' name=ID "icon:" icon=STRING;
+    'classic' name=ID;
 
 ColumnChartWidget:
-    'columnchart' name=ID 'downloadeable' downloadeable=STRING;
+    'columnchart' name=ID
+        ("{" ("filters" "on" "the" position=Position)? ('downloadeable' downloadeable=STRING)? "}")?;
 
 LineChartWidget:
-    'linechart' name=ID;
+    'linechart' name=ID 
+        ("{" "filters" "on" "the" position=Position  "}")?;
 
 PolarChartWidget:
-    'polarchart' name=ID "{"
-        "filters{"
-            "position" position=STRING
-        "}"
-    "}";
+    'polarchart' name=ID 
+        ("{" "filters" "on" "the" position=Position  "}")?;
+
 
 WidgetWrapper:
     'widgetWrapper' name=ID "width:" width=INT 'px' '{' 
@@ -61,6 +61,8 @@ FQN:
     {FQN}
 	ID ('.' ID)*
 ;
+
+Position returns string: 'left' | 'top' | 'bottom' | 'right'; 
 
 terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
