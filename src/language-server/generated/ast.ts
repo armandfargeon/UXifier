@@ -5,7 +5,7 @@
 
 /* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { AstNode, AstReflection, isAstNode } from 'langium';
+import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
 
 export interface AbstractWidget extends AstNode {
     readonly $container: WidgetWrapper;
@@ -43,8 +43,18 @@ export function isColor(item: unknown): item is Color {
     return reflection.isInstance(item, Color);
 }
 
+export interface FQN extends AstNode {
+}
+
+export const FQN = 'FQN';
+
+export function isFQN(item: unknown): item is FQN {
+    return reflection.isInstance(item, FQN);
+}
+
 export interface Header extends AstNode {
     readonly $container: App;
+    color: Reference<Color>
     level: number
     logo: string
     name: string
@@ -149,14 +159,14 @@ export function isPolarChartWidget(item: unknown): item is PolarChartWidget {
     return reflection.isInstance(item, PolarChartWidget);
 }
 
-export type UxifierAstType = 'AbstractWidget' | 'App' | 'Color' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'WidgetWrapper' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
+export type UxifierAstType = 'AbstractWidget' | 'App' | 'Color' | 'FQN' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'WidgetWrapper' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
 
-export type UxifierAstReference = never;
+export type UxifierAstReference = 'Header:color';
 
 export class UxifierAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['AbstractWidget', 'App', 'Color', 'Header', 'Menu', 'Page', 'Theme', 'WidgetWrapper', 'ClassicWidget', 'ColumnChartWidget', 'LineChartWidget', 'PolarChartWidget'];
+        return ['AbstractWidget', 'App', 'Color', 'FQN', 'Header', 'Menu', 'Page', 'Theme', 'WidgetWrapper', 'ClassicWidget', 'ColumnChartWidget', 'LineChartWidget', 'PolarChartWidget'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -182,6 +192,9 @@ export class UxifierAstReflection implements AstReflection {
 
     getReferenceType(referenceId: UxifierAstReference): string {
         switch (referenceId) {
+            case 'Header:color': {
+                return Color;
+            }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
             }

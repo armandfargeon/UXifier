@@ -11,9 +11,8 @@ App:
 Theme:
     'theme' name=ID 
         '{'
-            'colors{' 
-                colors+=Color
-                (colors+=Color)*
+            'colors''{' 
+                (colors+=Color)+
             '}'
         '}';
 
@@ -21,7 +20,7 @@ Color:
     'color' name=ID 'code' code=STRING;
 
 Header: 
-    'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT;    
+    'header' name=ID 'title' title=STRING 'logo' logo=STRING 'level' level=INT color=[Color|FQN]; 
 
 AbstractWidget:
     ClassicWidget | LineChartWidget | PolarChartWidget | ColumnChartWidget;
@@ -53,6 +52,11 @@ Menu:
     'menu' name=ID '{' 
         (pages+=Page)* 
     '}';
+
+FQN:
+    {FQN}
+	ID ('.' ID)*
+;
 
 terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

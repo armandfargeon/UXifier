@@ -38,18 +38,20 @@ class GrommetAppGenerator {
             ${this.headerDeclaration(app)}
             ${this.MenuDeclaration(app)}
             ${this.defineTheme(app)}
-            function App() {
-                return(
-                    <Grommet background="#ededed">
-                        <Box fill>
-                            ${this.generateHeader(app)}
-                        </Box>
-                        ${this.generateMenu(app)}
-                    </Grommet>
-                );
-            }
-            export default App;
+            ${this.generateApp(app)}
         `;
+    }
+
+    generateApp(app: App): string{
+        let sb: StringBuilder = new StringBuilder();
+        sb.writeln('function App() {\n');
+        sb.writeln('return(\n <Grommet background="#ededed" theme='+`"${app.theme.name}"`+'> \n <Box fill> \n');
+        sb.writeln(`${this.generateHeader(app)}`);
+        sb.writeln('</Box>');
+        sb.writeln(`${this.generateMenu(app)}`);
+        sb.writeln('</Grommet>\n);\n}');
+        sb.writeln('export default App;\n');
+        return sb.toString()
     }
 
     /**
@@ -240,29 +242,6 @@ class GrommetAppGenerator {
         sb.writeln(');');
         return sb.toString();
     }
-
-    // <Box direction="column" gap="large">
-    //     <Box round pad="medium" direction="column" background="white">
-    //         <Box gap="small">
-    //             <div id="chart" className="grommet__container">
-    //                 <Box pad="small" elevation="medium">
-    //                     <div className="title-chart">
-    //                         <Row>
-    //                             <Typography variant="h6" className="title-chart">Titre</Typography>
-    //                         </Row>
-    //                         <Typography variant="subtitle1">Description...</Typography>
-    //                     </div>
-    //                     <Chart
-    //                         options={state.options}
-    //                         series={state.series}
-    //                         type="bar"
-    //                         height="300"
-    //                     />
-    //                 </Box>
-    //             </div>
-    //         </Box>
-    //     </Box>
-    // </Box>
 
     declarationComponents(app: App): string {
         let widgets: AbstractWidget[] = app.menu.pages.map(p =>

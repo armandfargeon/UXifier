@@ -125,19 +125,11 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Keyword",
-            "value": "colors{"
+            "value": "colors"
           },
           {
-            "$type": "Assignment",
-            "feature": "colors",
-            "operator": "+=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "Color"
-              }
-            }
+            "$type": "Keyword",
+            "value": "{"
           },
           {
             "$type": "Assignment",
@@ -151,7 +143,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               }
             },
             "elements": [],
-            "cardinality": "*"
+            "cardinality": "+"
           },
           {
             "$type": "Keyword",
@@ -278,6 +270,24 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               "arguments": [],
               "rule": {
                 "$refText": "INT"
+              }
+            }
+          },
+          {
+            "$type": "Assignment",
+            "feature": "color",
+            "operator": "=",
+            "terminal": {
+              "$type": "CrossReference",
+              "type": {
+                "$refText": "Color"
+              },
+              "terminal": {
+                "$type": "RuleCall",
+                "arguments": [],
+                "rule": {
+                  "$refText": "FQN"
+                }
               }
             }
           }
@@ -759,6 +769,47 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           {
             "$type": "Keyword",
             "value": "}"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "FQN",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Action",
+            "type": "FQN",
+            "elements": []
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "ID"
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": ".",
+                "elements": []
+              },
+              {
+                "$type": "RuleCall",
+                "arguments": [],
+                "rule": {
+                  "$refText": "ID"
+                }
+              }
+            ],
+            "cardinality": "*"
           }
         ]
       }
