@@ -23,7 +23,7 @@ import {PolarChartWidget} from './components/PolarChartWidget';
                 direction='row'
                 align='center'
                 justify='between'
-                background='brand'
+                background='black'
                 pad={{ left: 'medium', right: 'small', vertical: 'small' }}
                 elevation='medium'
                 style={{ zIndex: '1' }}

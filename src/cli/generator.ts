@@ -1,8 +1,8 @@
 import fs from 'fs';
-import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
+import { CompositeGeneratorNode, isCrossReference, processGeneratorNode } from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
-import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, PolarChartWidget, ColumnChartWidget, LineChartWidget} from '../language-server/generated/ast';
+import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, PolarChartWidget, ColumnChartWidget, LineChartWidget, isFQN, Color} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
@@ -116,13 +116,15 @@ class GrommetAppGenerator {
     }
 
     headerDeclaration(app: App): string {
+        let colorTheme : Color|undefined = this.findColorHeader(app)
+        
         return `${app.header}` ? ` const ${this.capitalizeFirstLetter(app.header.name)} = (props) => (
             <Box
                 tag='header'    
                 direction='row'
                 align='center'
                 justify='between'
-                background='brand'
+                background='${colorTheme?.name}'
                 pad={{ left: 'medium', right: 'small', vertical: 'small' }}
                 elevation='medium'
                 style={{ zIndex: '1' }}
@@ -287,6 +289,21 @@ class GrommetAppGenerator {
         node.append(this.dependencies(true));
         node.append(body);
         this.componentsFiles(destination, node, component);
+    }
+
+
+    findColorHeader(app: App){
+        if(isFQN(app.header.color)){
+            if(isCrossReference(app.header.color.$cstNode?.feature)){
+                for(const colorTheme of app.theme.colors){
+                    let color = app.header.color.$cstNode?.text
+                    if(color?.split(".").pop() === colorTheme.name){
+                        return colorTheme
+                    }
+                }
+            }
+        }
+        return undefined
     }
 
     declarationComponents(app: App, destination: string): string {
