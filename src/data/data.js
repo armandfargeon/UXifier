@@ -59,51 +59,49 @@ export const statParticipation = {
   description: "Statistique de licensiement référencant un nombre de licensiement en 2022"
 };
 
-const colorschart = ['#abeb65', '#a565ea', '#72C6FF', '#c808f9'];
-
 export const statCrypto = {
   title: "Statistiques des cryptos monaies",
   description: "Les cryptos montant sur le marché",
-options: {
-  colors: colorschart,
-  plotOptions: {
-    bar: {
-      horizontal: false,
-      columnWidth: '45%',
+  options: {
+    colors: ['#abeb65', '#a565ea', '#72C6FF', '#c808f9'],
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '45%',
+      },
     },
-  },
-  dataLabels: {
-    enabled: false
-  },
-  stroke: {
-    show: true,
-    width: 2,
-  },
-  xaxis: {
-    categories: [''],
-  },
-  fill: {
-    opacity: 1
-  },
-  tooltip: {
-    y: {
-      formatter: function (val) {
-        return val
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: true,
+      width: 2,
+    },
+    xaxis: {
+      categories: [''],
+    },
+    fill: {
+      opacity: 1
+    },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return val
+        }
       }
     }
-  }
-},
-series: [{
-  name: 'Etherum',
-  data: [44]
-}, {
-  name: 'Bitcoin',
-  data: [76]
-},{
-  name: 'Solana',
-  data: [12]
-},{
-  name: 'Cardano',
-  data: [28]
-}],
+  },
+  series: [{
+    name: 'Etherum',
+    data: [44]
+  }, {
+    name: 'Bitcoin',
+    data: [76]
+  },{
+    name: 'Solana',
+    data: [12]
+  },{
+    name: 'Cardano',
+    data: [28]
+  }],
 };

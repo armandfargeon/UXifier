@@ -4,21 +4,30 @@ app dsl {
             color black code "#000000"
             color green code "#00FF00"
             color white code "#FFFFFF"
+            color graylight code "#ededed"
         } 
     }
-    header AppBar title "test" logo "www.image-url.com" level 3
+    header AppBar title "test" logo "www.image-url.com" level 3 myTheme.black
     menu MyMenu {
         page myPageOne "pageOne" {
             widgetWrapper widgetWrapperOne width: 100 px {
-                classic statscovid icon: "shorturl.at/osJY4"
-                columnchart statCrypto downloadeable "true"
+                classic statscovid
+                columnchart statCrypto {
+                    filters on the left
+                    column width measures "45%"
+                    downloadeable "true"
+                }
             }
         }
         page myPageOne "pageTwo" {
             widgetWrapper widgetWrapperOne width: 100 px {
-                classic statlicenciement icon: "shorturl.at/osJY4"
-                linechart statCasContact x: "nombre de cas" y: "années" 
-                polarchart statParticipation 
+                classic statlicenciement
+                linechart statCasContact {
+                    filters on the left
+                }
+                polarchart statParticipation { 
+                    filters on the left
+                }
             }
         }
     }
