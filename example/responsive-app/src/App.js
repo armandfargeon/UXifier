@@ -67,10 +67,28 @@ const MyMenu = (props) => (
       >
         {/* height = "x%" doesn't work for the line,
         without specifying the height, it adapats to its content (the lines in the widget) */}
-        {/* TODO Armand : ajouter le width="x%" de l'utilisateur du DSL en second argument des widgets */}
+        {/* 
+          TODO Armand : ajouter le width="x%" de l'utilisateur du DSL en second argument des widgets 
+          IMPORTANT : au vu du fait qu'il y a du gap (même xsmall) il ne faut PAS que la somme des width = 100% 
+          ICI 99% c'est ok
+        */}
         <ClassicWidget data={statlicenciement} width="12%"/>
         <LineChartWidget data={statParticipation} width="49%"/>
         <PolarChartWidget data={statCasContact} width="38%"/>
+      </Line>
+
+      <Line 
+        margin="xsmall" 
+        direction="row" 
+        gap="xsmall" 
+      >
+        {/* ICI 99% c'est pas ok, 98 oui */}
+        {/* Avec 8 widgets (on voit rien déjà) mais c'est 96% */}
+        {/* Sans plus de tests, l'équation serait (100-(nbWidgets/2(résultat entier)))% */}
+        <ClassicWidget data={statlicenciement} width="25%"/>
+        <LineChartWidget data={statCasContact} width="25%"/>
+        <PolarChartWidget data={statParticipation} width="24%"/>
+        <ColumnChartWidget data={statCrypto} width="24%"/>
       </Line>
     </Tab>
   </Tabs>
