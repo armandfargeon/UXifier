@@ -1,8 +1,8 @@
 import fs from 'fs';
-import { CompositeGeneratorNode, isCrossReference, processGeneratorNode } from 'langium';
+import { CompositeGeneratorNode, isCrossReference, processGeneratorNode} from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
-import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, PolarChartWidget, ColumnChartWidget, LineChartWidget, isFQN, Color} from '../language-server/generated/ast';
+import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, PolarChartWidget, ColumnChartWidget, LineChartWidget, isFQN, Color, isModeType, ModeType} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
@@ -29,12 +29,50 @@ class GrommetAppGenerator {
         return `
             //groomet app generated : ${app.name}
             ${this.dependencies(false)}
+            ${this.declarationPlugins(app)}
             ${this.declarationComponents(app, destination)}
             ${this.headerDeclaration(app)}
             ${this.MenuDeclaration(app)}
             ${this.defineTheme(app)}
             ${this.generateApp(app)}
         `;
+    }
+
+    declarationPlugins(app: App): string{
+        let plugsDecl: StringBuilder = new StringBuilder();
+        if(this.isDarkModeActivated(app)){
+            plugsDecl.writeln("const DarkMode = deepMerge(Grommet, acme);\n");
+        } 
+        return plugsDecl.toString();
+    }
+
+    /**
+     * generate button to allow toggle dark/light mode
+     * @param app 
+     * @returns generated button
+     */
+    generatePlugins(app: App): string{
+        let plugins: StringBuilder = new StringBuilder();
+        if(this.isDarkModeActivated(app)){
+            let darkMode: ModeType|undefined = app.plugins.modes.find((m)=>m.mode==="DarkMode");
+            if(isModeType(darkMode)){
+                let pos: string = `${darkMode.posX}`;
+                plugins.writeln('<div style={{ position: "relative"}}>')
+                plugins.writeln("<div style={{ position: 'absolute', " + pos + ": 0}}>")
+                plugins.writeln("<Button");
+                plugins.writeln('label="Toggle Dark/Light Mode"');
+                plugins.writeln("primary");
+                plugins.writeln('alignSelf="center"');
+                plugins.writeln('margin="large"')
+                plugins.writeln("onClick={() => setDarkMode(!darkMode)}")
+                plugins.writeln("/>\n</div>\n</div>");
+            }
+        }
+        return plugins.toString();
+    }
+
+    isDarkModeActivated(app: App): boolean{
+        return app.plugins.modes.some(m => {return m.mode === "DarkMode"});
     }
 
     componentsFiles(p:string, node:CompositeGeneratorNode, nameComponent: string){
@@ -48,9 +86,21 @@ class GrommetAppGenerator {
     generateApp(app: App): string{
         let sb: StringBuilder = new StringBuilder();
         sb.writeln('function App() {\n');
-        sb.writeln('return(\n <Grommet background="#ededed" theme='+`"${app.theme.name}"`+'> \n <Box fill> \n');
+
+        let theme: string = "";
+        let background: string = 'background="#ededed"';
+        if(this.isDarkModeActivated(app)){
+            theme = this.isDarkModeActivated(app) ? "DarkMode" : `${app.theme.name}`;
+            sb.writeln("const [darkMode, setDarkMode] = React.useState(false);");
+            background = ""; // si theme pas de background
+        }
+
+        sb.writeln('return(\n <Grommet ' + background + 'theme={' + theme + "}");
+        this.isDarkModeActivated(app) ? sb.writeln(' themeMode={darkMode ? "dark" : "light"}') : "";
+        sb.writeln('> \n <Box fill> \n');
         sb.writeln(`${this.generateHeader(app)}`);
         sb.writeln('</Box>');
+        sb.writeln(`${this.generatePlugins(app)}`);
         sb.writeln(`${this.generateMenu(app)}`);
         sb.writeln('</Grommet>\n);\n}');
         sb.writeln('export default App;\n');
@@ -65,12 +115,12 @@ class GrommetAppGenerator {
      */
     dependencies(isForComponents: boolean): string {
         let dependencies: StringBuilder = new StringBuilder();
-        dependencies.writeln("import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph } from 'grommet';");
+        dependencies.writeln("import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph, Button } from 'grommet';");
         dependencies.writeln("import { LineChart, PolarChart } from 'grommet-controls/chartjs';");
         dependencies.writeln('import Typography from "@material-ui/core/Typography";');
         dependencies.writeln("import { Row } from 'reactstrap';");
         dependencies.writeln('import Chart from "react-apexcharts";');
-        dependencies.writeln("import { React } from 'react'");
+        dependencies.writeln("import React from 'react'");
         ;
         if(!isForComponents){
             dependencies.writeln("import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data'")
@@ -78,6 +128,10 @@ class GrommetAppGenerator {
             dependencies.writeln("import {ColumnChartWidget} from './components/ColumnChartWidget';\n");
             dependencies.writeln("import {LineChartWidget} from './components/LineChartWidget';\n");
             dependencies.writeln("import {PolarChartWidget} from './components/PolarChartWidget';\n");
+            dependencies.writeln("import { acme } from './components/acme-theme';");
+            dependencies.writeln("import { deepMerge } from 'grommet/utils';");
+
+              
         }
         return dependencies.toString();
     }

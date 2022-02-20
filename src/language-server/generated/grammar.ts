@@ -88,8 +88,95 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
+            "$type": "Assignment",
+            "feature": "plugins",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Plugins"
+              }
+            },
+            "cardinality": "?"
+          },
+          {
             "$type": "Keyword",
             "value": "}"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Plugins",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "plugins{",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "modes",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ModeType"
+              }
+            },
+            "elements": [],
+            "cardinality": "+"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "ModeType",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "mode",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Mode"
+              }
+            },
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "X"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "posX",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Position"
+              }
+            }
           }
         ]
       }
@@ -893,6 +980,33 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
       }
     },
     {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Mode",
+      "hiddenTokens": [],
+      "type": "string",
+      "alternatives": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "DarkMode",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "DaltonienMode",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "VisionReduiteMode",
+            "elements": []
+          }
+        ]
+      }
+    },
+    {
       "$type": "TerminalRule",
       "name": "WS",
       "regex": "\\\\s+"
@@ -912,6 +1026,11 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
       "$type": "TerminalRule",
       "name": "STRING",
       "regex": "\\"[^\\"]*\\"|'[^']*'"
+    },
+    {
+      "$type": "TerminalRule",
+      "name": "BOOLEAN",
+      "regex": "([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])"
     },
     {
       "$type": "TerminalRule",

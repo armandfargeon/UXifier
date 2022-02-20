@@ -22,6 +22,7 @@ export interface App extends AstNode {
     header: Header
     menu: Menu
     name: string
+    plugins: Plugins
     theme: Theme
 }
 
@@ -79,6 +80,18 @@ export function isMenu(item: unknown): item is Menu {
     return reflection.isInstance(item, Menu);
 }
 
+export interface ModeType extends AstNode {
+    readonly $container: Plugins;
+    mode: Mode
+    posX: Position
+}
+
+export const ModeType = 'ModeType';
+
+export function isModeType(item: unknown): item is ModeType {
+    return reflection.isInstance(item, ModeType);
+}
+
 export interface Page extends AstNode {
     readonly $container: Menu;
     name: string
@@ -90,6 +103,17 @@ export const Page = 'Page';
 
 export function isPage(item: unknown): item is Page {
     return reflection.isInstance(item, Page);
+}
+
+export interface Plugins extends AstNode {
+    readonly $container: App;
+    modes: Array<ModeType>
+}
+
+export const Plugins = 'Plugins';
+
+export function isPlugins(item: unknown): item is Plugins {
+    return reflection.isInstance(item, Plugins);
 }
 
 export interface Theme extends AstNode {
@@ -160,14 +184,16 @@ export function isPolarChartWidget(item: unknown): item is PolarChartWidget {
 
 export type Position = 'left' | 'top' | 'bottom' | 'right'
 
-export type UxifierAstType = 'AbstractWidget' | 'App' | 'Color' | 'FQN' | 'Header' | 'Menu' | 'Page' | 'Theme' | 'WidgetWrapper' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
+export type Mode = 'DarkMode' | 'DaltonienMode' | 'VisionReduiteMode'
+
+export type UxifierAstType = 'AbstractWidget' | 'App' | 'Color' | 'FQN' | 'Header' | 'Menu' | 'ModeType' | 'Page' | 'Plugins' | 'Theme' | 'WidgetWrapper' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
 
 export type UxifierAstReference = 'Header:color';
 
 export class UxifierAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['AbstractWidget', 'App', 'Color', 'FQN', 'Header', 'Menu', 'Page', 'Theme', 'WidgetWrapper', 'ClassicWidget', 'ColumnChartWidget', 'LineChartWidget', 'PolarChartWidget'];
+        return ['AbstractWidget', 'App', 'Color', 'FQN', 'Header', 'Menu', 'ModeType', 'Page', 'Plugins', 'Theme', 'WidgetWrapper', 'ClassicWidget', 'ColumnChartWidget', 'LineChartWidget', 'PolarChartWidget'];
     }
 
     isInstance(node: unknown, type: string): boolean {

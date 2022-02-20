@@ -7,7 +7,18 @@ App:
             theme=Theme
             header=Header
             menu=Menu
+            plugins=Plugins?
         '}';
+
+Plugins:
+    'plugins{'
+            (modes+=ModeType)+
+            '}';
+
+ModeType:
+    mode=Mode 'X' posX=Position;
+
+
 Theme:
     'theme' name=ID 
         '{'
@@ -64,11 +75,13 @@ FQN:
 
 Position returns string: 'left' | 'top' | 'bottom' | 'right'; 
 
+Mode returns string: 'DarkMode' | 'DaltonienMode' | 'VisionReduiteMode'; 
+
 terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal INT returns number: /[0-9]+/;
 terminal STRING: /"[^"]*"|'[^']*'/;
-//terminal BOOLEAN: /([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])/;
+terminal BOOLEAN: /([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee])/;
 
 terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 terminal SL_COMMENT: /\/\/[^\n\r]*/;

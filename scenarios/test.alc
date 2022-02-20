@@ -31,4 +31,8 @@ app dsl {
             }
         }
     }
+
+    plugins{
+        DarkMode X left
+    }
 }
