@@ -1,21 +1,17 @@
 import fs from 'fs';
-import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
+import { CompositeGeneratorNode, isCrossReference, processGeneratorNode} from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
+import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, PolarChartWidget, ColumnChartWidget, LineChartWidget, isFQN, Color, isModeType, ModeType} from '../language-server/generated/ast';
 import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, Widget, isPopup, Popup} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
     const data = extractDestinationAndName(filePath, destination);
     const generatedFilePath = `${path.join(data.destination, data.name)}.js`;
-
     const fileNode = new CompositeGeneratorNode();
-
     const grommetAppGenerator = new GrommetAppGenerator();
-
-    fileNode.append(grommetAppGenerator.compile(app));
-
-    //model.greetings.forEach(greeting => fileNode.append(`console.log('Hello, ${greeting.person.$refText}!');`, NL));
+    fileNode.append(grommetAppGenerator.compile(app, data.destination + "/components"));
 
     if (!fs.existsSync(data.destination)) {
         fs.mkdirSync(data.destination, { recursive: true });
@@ -30,44 +26,115 @@ class GrommetAppGenerator {
      * @param app 
      * @returns code generated (app.js)
      */
-    compile(app: App): string {
+    compile(app: App, destination: string): string {
         return `
             //groomet app generated : ${app.name}
-            ${this.dependencies()}
-            ${this.declarationComponents(app)}
+            ${this.dependencies(false)}
+            ${this.declarationPlugins(app)}
+            ${this.declarationComponents(app, destination)}
             ${this.headerDeclaration(app)}
             ${this.MenuDeclaration(app)}
             ${this.defineTheme(app)}
-            function App() {
-                return(
-                    <Grommet background="#ededed">
-                        <Box fill>
-                            ${this.generateHeader(app)}
-                        </Box>
-                        ${this.generateMenu(app)}
-                    </Grommet>
-                );
-            }
-            export default App;
+            ${this.generateApp(app)}
         `;
     }
+
+    declarationPlugins(app: App): string{
+        let plugsDecl: StringBuilder = new StringBuilder();
+        if(this.isDarkModeActivated(app)){
+            plugsDecl.writeln("const DarkMode = deepMerge(Grommet, acme);\n");
+        }
+        return plugsDecl.toString();
+    }
+
+    /**
+     * generate button to allow toggle dark/light mode
+     * @param app
+     * @returns generated button
+     */
+    generatePlugins(app: App): string{
+        let plugins: StringBuilder = new StringBuilder();
+        if(this.isDarkModeActivated(app)){
+            let darkMode: ModeType|undefined = app.plugins.modes.find((m)=>m.mode==="DarkMode");
+            if(isModeType(darkMode)){
+                let pos: string = `${darkMode.posX}`;
+                plugins.writeln('<div style={{ position: "relative"}}>')
+                plugins.writeln("<div style={{ position: 'absolute', " + pos + ": 0}}>")
+                plugins.writeln("<Button");
+                plugins.writeln('label="Toggle Dark/Light Mode"');
+                plugins.writeln("primary");
+                plugins.writeln('alignSelf="center"');
+                plugins.writeln('margin="large"')
+                plugins.writeln("onClick={() => setDarkMode(!darkMode)}")
+                plugins.writeln("/>\n</div>\n</div>");
+            }
+        }
+        return plugins.toString();
+    }
+
+    isDarkModeActivated(app: App): boolean{
+        return app.plugins.modes.some(m => {return m.mode === "DarkMode"});
+    }
+
+    componentsFiles(p:string, node:CompositeGeneratorNode, nameComponent: string){
+        const generatedFilePath = `${path.join(p, nameComponent)}.js`;
+        if (!fs.existsSync(p)) {
+            fs.mkdirSync(p, { recursive: true });
+        }
+        fs.writeFileSync(generatedFilePath, processGeneratorNode(node));
+    }
+
+    generateApp(app: App): string{
+        let sb: StringBuilder = new StringBuilder();
+        sb.writeln('function App() {\n');
+
+        let theme: string = "";
+        let background: string = 'background="#ededed"';
+        if(this.isDarkModeActivated(app)){
+            theme = this.isDarkModeActivated(app) ? "DarkMode" : `${app.theme.name}`;
+            sb.writeln("const [darkMode, setDarkMode] = React.useState(false);");
+            background = ""; // si theme pas de background
+        }
+
+        sb.writeln('return(\n <Grommet ' + background + 'theme={' + theme + "}");
+        this.isDarkModeActivated(app) ? sb.writeln(' themeMode={darkMode ? "dark" : "light"}') : "";
+        sb.writeln('> \n <Box fill> \n');
+        sb.writeln(`${this.generateHeader(app)}`);
+        sb.writeln('</Box>');
+        sb.writeln(`${this.generatePlugins(app)}`);
+        sb.writeln(`${this.generateMenu(app)}`);
+        sb.writeln('</Grommet>\n);\n}');
+        sb.writeln('export default App;\n');
+        return sb.toString()
+    }
+
 
     /**
      * Define dependencies
      * @returns dependencies as a string 
      * //todo le faire dynamiquement
      */
-    dependencies(): string {
-        return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph,Button,Layer } from 'grommet'; \n
-                import { LineChart, PolarChart } from 'grommet-controls/chartjs';
-                import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data' \n
-                //import Typography from "@material-ui/core/Typography"; \n
-                import { Row } from 'reactstrap';\n
-                import { grommet } from 'grommet/themes';\n
-                import { deepMerge } from 'grommet/utils';\n
-                import { FormClose } from 'grommet-icons';\n
-                import React from 'react';\n
-                import Chart from "react-apexcharts";\n`;
+    dependencies(isForComponents: boolean): string {
+        let dependencies: StringBuilder = new StringBuilder();
+        dependencies.writeln("import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph, Button } from 'grommet';");
+        dependencies.writeln("import { LineChart, PolarChart } from 'grommet-controls/chartjs';");
+        dependencies.writeln('import Typography from "@material-ui/core/Typography";');
+        dependencies.writeln("import { Row } from 'reactstrap';");
+        dependencies.writeln('import Chart from "react-apexcharts";');
+        dependencies.writeln("import React from 'react'");
+        ;
+        if(!isForComponents){
+            dependencies.writeln("import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data'")
+            dependencies.writeln("import {ClassicWidget} from './components/ClassicWidget';\n");
+            dependencies.writeln("import {ColumnChartWidget} from './components/ColumnChartWidget';\n");
+            dependencies.writeln("import {LineChartWidget} from './components/LineChartWidget';\n");
+            dependencies.writeln("import {PolarChartWidget} from './components/PolarChartWidget';\n");
+            dependencies.writeln("import { acme } from './components/acme-theme';");
+            dependencies.writeln("import { deepMerge } from 'grommet/utils';");
+
+
+        }
+        return dependencies.toString();
     }
 
     capitalizeFirstLetter(str: string) {
@@ -104,13 +171,14 @@ class GrommetAppGenerator {
     }
 
     headerDeclaration(app: App): string {
+        let colorTheme : Color|undefined = this.findColorHeader(app)
         return `${app.header}` ? ` const ${this.capitalizeFirstLetter(app.header.name)} = (props) => (
             <Box
-                tag='header'
+                tag='header'    
                 direction='row'
                 align='center'
                 justify='between'
-                background='brand'
+                background='${colorTheme?.code}'
                 pad={{ left: 'medium', right: 'small', vertical: 'small' }}
                 elevation='medium'
                 style={{ zIndex: '1' }}
@@ -124,7 +192,7 @@ class GrommetAppGenerator {
         return `${app.menu} ` ? `
         <${this.capitalizeFirstLetter(app.menu.name)}></${this.capitalizeFirstLetter(app.menu.name)}> 
         `:
-            ` "s" `;
+        ` "s" `;
     }
 
     MenuDeclaration(app: App) {
@@ -178,12 +246,38 @@ class GrommetAppGenerator {
             if(wid)
                 return `<${widget.$type}  base ={${this.getWidgetFromPopup(widget.base,widget.base.name)}} pop= {${this.getWidgetFromPopup(wid,wid.name)}} />\n`
         }
-        
+
         return `<${widget.$type} data={ ${widget.name} }/>\n`
     }
 
     declareConst(name: string): string {
         return "export const " + name + "= ({ data }) => (";
+    }
+
+    generatePosition(objOptions:any){
+        let sb: StringBuilder = new StringBuilder();
+        sb.write(`
+            ${objOptions.legend_position ? `position: '${objOptions.legend_position}',` : ""}
+        `);
+        return sb;
+    }
+
+    generateOptionByWidget(widget: AbstractWidget) {
+        let sb: StringBuilder = new StringBuilder();
+        sb.write("{{ ");
+        if(isPolarChartWidget(widget) && (widget.position)) {
+            let objOptions = {legend_position: widget.position}
+            sb.write(`themedData: true, legend: { ${this.generatePosition(objOptions)} },`)
+        } else if(isLineChartWidget(widget) && (widget.position)) {
+            let objOptions = {legend_position: widget.position}
+            sb.write(`legend: { ${this.generatePosition(objOptions)} },`)
+        } else if(isColumnChartWidget(widget) && (widget.position)) {
+            let objOptions = {legend_position: widget.position, column_width: widget.columnWidth}
+            sb.write(`plotOptions: { bar: { columnWidth: '${objOptions.column_width}'} }, xaxis: { categories: ['']},`)
+            sb.write(`legend: { ${this.generatePosition(objOptions)} },`)
+        }
+        sb.write(" }}");
+        return sb.toString();
     }
 
     generateClassicWidgetComponent(): string {
@@ -197,11 +291,11 @@ class GrommetAppGenerator {
         return sb.toString();
     }
     
-    generateLineChartWidgetComponent(): string {
+    generateLineChartWidgetComponent(widget: LineChartWidget): string {
         let sb: StringBuilder = new StringBuilder();
         sb.writeln(this.declareConst("LineChartWidget"));
         sb.writeln(this.generateFirstTagWidgetContainer());
-        sb.writeln("<LineChart data={data.data} />");
+        sb.writeln(`<LineChart options=${this.generateOptionByWidget(widget)} data={data.data} />`);
         sb.writeln(this.generateLastTagWidgetContainer());
         sb.writeln(");");
         return sb.toString();
@@ -225,17 +319,17 @@ class GrommetAppGenerator {
         return sb.toString()
     }
 
-    generatePolarChartWidgetComponent(): string {
+    generatePolarChartWidgetComponent(widget: PolarChartWidget): string {
         let sb: StringBuilder = new StringBuilder();
         sb.writeln(this.declareConst("PolarChartWidget"));
         sb.writeln(this.generateFirstTagWidgetContainer());
-        sb.writeln("<PolarChart data={data.data} options={data.options} />");
+        sb.writeln(`<PolarChart data={data.data} options=${this.generateOptionByWidget(widget)} />`);
         sb.writeln(this.generateLastTagWidgetContainer());
         sb.writeln(");");
         return sb.toString();
     }
 
-    generateColumnChartWidgetComponent(): string{
+    generateColumnChartWidgetComponent(widget: ColumnChartWidget): string{
         let sb: StringBuilder = new StringBuilder();
         sb.writeln(this.declareConst("ColumnChartWidget"));
         sb.writeln(this.generateFirstTagWidgetContainer());
@@ -247,13 +341,13 @@ class GrommetAppGenerator {
         sb.writeln('</Row>');
         sb.writeln('<Typography variant="subtitle1">{data.description}</Typography>');
         sb.writeln('</div>');
-        sb.writeln('<Chart options={data.options} series={data.series} type="bar" height="300" />');
+        sb.writeln(`<Chart options=${this.generateOptionByWidget(widget)} series={data.series} type="bar" height="300" />`);
         sb.writeln('</Box>\n</div>\n');
         sb.writeln(this.generateLastTagWidgetContainer());
         sb.writeln(');');
         return sb.toString();
     }
-    
+
     generatePopup(widget:Widget,app:App){
         let sb: StringBuilder = new StringBuilder();
         sb.writeln("const customTheme = deepMerge(grommet, {");
@@ -270,7 +364,7 @@ class GrommetAppGenerator {
         sb.writeln('const onClose = () => setOpen(undefined);')
         sb.writeln('return (')
         sb.writeln('<Grommet theme={customTheme} full>')
-        sb.writeln('<Box fill align="center" justify="center" gap="medium" onClick={onOpen}>')     
+        sb.writeln('<Box fill align="center" justify="center" gap="medium" onClick={onOpen}>')
         if(isPopup(widget)){
             widget.base.$type
             sb.writeln( "{base}");
@@ -292,14 +386,6 @@ class GrommetAppGenerator {
         sb.writeln('fill >')
         sb.writeln('<Button alignSelf="end" icon={<FormClose />} onClick={onClose} />');
         sb.writeln("{pop}")
-        /*if(isPopup(widget) ){
-            if(widget.popup){
-                const wid = this.findWidgetPrivate(widget,app);
-                sb.writeln(wid?.name)
-                if(wid)
-                    sb.writeln(this.getWidgetFromPopup(wid,true));
-            } 
-        }*/
         sb.writeln('</Box>')
         sb.writeln('</Layer>)}')
         sb.writeln('</Grommet>);};')
@@ -317,39 +403,60 @@ class GrommetAppGenerator {
 
         return undefined;
     }
+    populateNode(node: CompositeGeneratorNode, component: string, body: string, visited: string[], destination: string){
+        visited.push(component);
+        node.append(this.dependencies(true));
+        node.append(body);
+        this.componentsFiles(destination, node, component);
+    }
 
-    declarationComponents(app: App): string {
+
+    findColorHeader(app: App){
+        if(isFQN(app.header.color)){
+            if(isCrossReference(app.header.color.$cstNode?.feature)){
+                for(const colorTheme of app.theme.colors){
+                    let color = app.header.color.$cstNode?.text
+                    if(color?.split(".").pop() === colorTheme.name){
+                        return colorTheme
+                    }
+                }
+            }
+        }
+        return undefined
+    }
+
+    declarationComponents(app: App, destination: string): string {
         let widgets: Widget[] = app.menu.pages.map(p =>
             p.widgetWrappers.map(w=>w.widgets).flat()
         ).flat();
 
+        let typesVisited : string[] = [];
         let hiddens : Widget[] = app.hide.widgets;
 
         widgets = widgets.concat(hiddens);
 
-        let typesVisited : string[] = []
 
         let sb: StringBuilder = new StringBuilder();
         widgets.forEach(widget => {        
             if(isLineChartWidget(widget)) {
                 if(!typesVisited.includes("LineChartWidget")){
-                    typesVisited.push("LineChartWidget")
-                    sb.write(this.generateLineChartWidgetComponent());
+                    const lineNode = new CompositeGeneratorNode();
+                    this.populateNode(lineNode, "LineChartWidget", this.generateLineChartWidgetComponent(widget), typesVisited, destination);
                 }
             } else if(isClassicWidget(widget)){
                 if(!typesVisited.includes("ClassicWidget")){
-                    typesVisited.push("ClassicWidget")
-                    sb.write(this.generateClassicWidgetComponent());
+                    const classicNode = new CompositeGeneratorNode();
+                    this.populateNode(classicNode, "ClassicWidget", this.generateClassicWidgetComponent(), typesVisited, destination);
                 }
             } else if(isPolarChartWidget(widget)){
                 if(!typesVisited.includes("PolarChartWidget")){
-                    typesVisited.push("PolarChartWidget")
-                    sb.write(this.generatePolarChartWidgetComponent());
+                    const polarNode = new CompositeGeneratorNode();
+                    this.populateNode(polarNode, "PolarChartWidget", this.generatePolarChartWidgetComponent(widget), typesVisited, destination);
                 }
             }else if(isColumnChartWidget(widget)){
                 if(!typesVisited.includes("ColumnChartWidget")){
-                    typesVisited.push("ColumnChartWidget")
-                    sb.write(this.generateColumnChartWidgetComponent());
+                    const columnNode = new CompositeGeneratorNode();
+                    this.populateNode(columnNode, "ColumnChartWidget", this.generateColumnChartWidgetComponent(widget), typesVisited, destination);
                 }
             }else if (isPopup(widget)){
                 if(!typesVisited.includes("Popup")){
@@ -369,6 +476,6 @@ class GrommetAppGenerator {
             if(wid.name == widFinal )
                 return wid;
         }
-        return undefined;      
+        return undefined;
     }
 }

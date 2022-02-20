@@ -7,11 +7,22 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
 
+export interface AbstractWidget extends AstNode {
+    readonly $container: WidgetWrapper;
+    name: string
+}
+
+export const AbstractWidget = 'AbstractWidget';
+
+export function isAbstractWidget(item: unknown): item is AbstractWidget {
+    return reflection.isInstance(item, AbstractWidget);
+}
+
 export interface App extends AstNode {
     header: Header
-    hide: Hidden
     menu: Menu
     name: string
+    plugins: Plugins
     theme: Theme
 }
 
@@ -44,6 +55,7 @@ export function isFQN(item: unknown): item is FQN {
 
 export interface Header extends AstNode {
     readonly $container: App;
+    color: Reference<Color>
     level: number
     logo: string
     name: string
@@ -56,18 +68,6 @@ export function isHeader(item: unknown): item is Header {
     return reflection.isInstance(item, Header);
 }
 
-export interface Hidden extends AstNode {
-    readonly $container: App;
-    name: string
-    widgets: Array<AbstractWidget>
-}
-
-export const Hidden = 'Hidden';
-
-export function isHidden(item: unknown): item is Hidden {
-    return reflection.isInstance(item, Hidden);
-}
-
 export interface Menu extends AstNode {
     readonly $container: App;
     name: string
@@ -78,6 +78,18 @@ export const Menu = 'Menu';
 
 export function isMenu(item: unknown): item is Menu {
     return reflection.isInstance(item, Menu);
+}
+
+export interface ModeType extends AstNode {
+    readonly $container: Plugins;
+    mode: Mode
+    posX: Position
+}
+
+export const ModeType = 'ModeType';
+
+export function isModeType(item: unknown): item is ModeType {
+    return reflection.isInstance(item, ModeType);
 }
 
 export interface Page extends AstNode {
@@ -93,6 +105,17 @@ export function isPage(item: unknown): item is Page {
     return reflection.isInstance(item, Page);
 }
 
+export interface Plugins extends AstNode {
+    readonly $container: App;
+    modes: Array<ModeType>
+}
+
+export const Plugins = 'Plugins';
+
+export function isPlugins(item: unknown): item is Plugins {
+    return reflection.isInstance(item, Plugins);
+}
+
 export interface Theme extends AstNode {
     readonly $container: App;
     colors: Array<Color>
@@ -105,21 +128,10 @@ export function isTheme(item: unknown): item is Theme {
     return reflection.isInstance(item, Theme);
 }
 
-export interface Widget extends AstNode {
-    readonly $container: Hidden | Popup | WidgetWrapper;
-    name: string
-}
-
-export const Widget = 'Widget';
-
-export function isWidget(item: unknown): item is Widget {
-    return reflection.isInstance(item, Widget);
-}
-
 export interface WidgetWrapper extends AstNode {
     readonly $container: Page;
     name: string
-    widgets: Array<Widget>
+    widgets: Array<AbstractWidget>
     width: number
 }
 
@@ -129,28 +141,7 @@ export function isWidgetWrapper(item: unknown): item is WidgetWrapper {
     return reflection.isInstance(item, WidgetWrapper);
 }
 
-export interface AbstractWidget extends Widget {
-}
-
-export const AbstractWidget = 'AbstractWidget';
-
-export function isAbstractWidget(item: unknown): item is AbstractWidget {
-    return reflection.isInstance(item, AbstractWidget);
-}
-
-export interface Popup extends Widget {
-    base: AbstractWidget
-    popup?: Reference<AbstractWidget>
-}
-
-export const Popup = 'Popup';
-
-export function isPopup(item: unknown): item is Popup {
-    return reflection.isInstance(item, Popup);
-}
-
 export interface ClassicWidget extends AbstractWidget {
-    icon: string
 }
 
 export const ClassicWidget = 'ClassicWidget';
@@ -160,7 +151,9 @@ export function isClassicWidget(item: unknown): item is ClassicWidget {
 }
 
 export interface ColumnChartWidget extends AbstractWidget {
+    columnWidth: string
     downloadeable: string
+    position: Position
 }
 
 export const ColumnChartWidget = 'ColumnChartWidget';
@@ -170,9 +163,7 @@ export function isColumnChartWidget(item: unknown): item is ColumnChartWidget {
 }
 
 export interface LineChartWidget extends AbstractWidget {
-    filters: Array<string>
-    x_axis: string
-    y_axis: string
+    position: Position
 }
 
 export const LineChartWidget = 'LineChartWidget';
@@ -182,7 +173,7 @@ export function isLineChartWidget(item: unknown): item is LineChartWidget {
 }
 
 export interface PolarChartWidget extends AbstractWidget {
-    filters: Array<string>
+    position: Position
 }
 
 export const PolarChartWidget = 'PolarChartWidget';
@@ -191,14 +182,18 @@ export function isPolarChartWidget(item: unknown): item is PolarChartWidget {
     return reflection.isInstance(item, PolarChartWidget);
 }
 
-export type UxifierAstType = 'App' | 'Color' | 'FQN' | 'Header' | 'Hidden' | 'Menu' | 'Page' | 'Theme' | 'Widget' | 'WidgetWrapper' | 'AbstractWidget' | 'Popup' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
+export type Position = 'left' | 'top' | 'bottom' | 'right'
 
-export type UxifierAstReference = 'Popup:popup';
+export type Mode = 'DarkMode' | 'DaltonienMode' | 'VisionReduiteMode'
+
+export type UxifierAstType = 'AbstractWidget' | 'App' | 'Color' | 'FQN' | 'Header' | 'Menu' | 'ModeType' | 'Page' | 'Plugins' | 'Theme' | 'WidgetWrapper' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
+
+export type UxifierAstReference = 'Header:color';
 
 export class UxifierAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['App', 'Color', 'FQN', 'Header', 'Hidden', 'Menu', 'Page', 'Theme', 'Widget', 'WidgetWrapper', 'AbstractWidget', 'Popup', 'ClassicWidget', 'ColumnChartWidget', 'LineChartWidget', 'PolarChartWidget'];
+        return ['AbstractWidget', 'App', 'Color', 'FQN', 'Header', 'Menu', 'ModeType', 'Page', 'Plugins', 'Theme', 'WidgetWrapper', 'ClassicWidget', 'ColumnChartWidget', 'LineChartWidget', 'PolarChartWidget'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -210,10 +205,6 @@ export class UxifierAstReflection implements AstReflection {
             return true;
         }
         switch (subtype) {
-            case AbstractWidget:
-            case Popup: {
-                return this.isSubtype(Widget, supertype);
-            }
             case ClassicWidget:
             case ColumnChartWidget:
             case LineChartWidget:
@@ -228,8 +219,8 @@ export class UxifierAstReflection implements AstReflection {
 
     getReferenceType(referenceId: UxifierAstReference): string {
         switch (referenceId) {
-            case 'Popup:popup': {
-                return AbstractWidget;
+            case 'Header:color': {
+                return Color;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);

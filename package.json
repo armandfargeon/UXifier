@@ -52,9 +52,12 @@
         "langium:watch": "langium generate --watch"
     },
     "dependencies": {
+        "chart.js": "^2.7.2",
         "colors": "^1.4.0",
         "commander": "^8.0.0",
+        "grommet-controls": "^3.0.2",
         "langium": "^0.2.0",
+        "react-chartjs-2": "^2.7.4",
         "vscode-languageclient": "^7.0.0",
         "vscode-languageserver": "^7.0.0"
     },
