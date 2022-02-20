@@ -8,6 +8,9 @@ app dsl {
         } 
     }
     header AppBar title "test" logo "www.image-url.com" level 3 myTheme.black
+    hide myhide{
+        classic statscovid
+    }
     menu MyMenu {
         page myPageOne "pageOne" {
             widgetWrapper widgetWrapperOne width: 100 px {
@@ -17,6 +20,9 @@ app dsl {
                     column width measures "45%"
                     downloadeable "true"
                 }
+                popup popu1 polarchart statParticipation { 
+                    filters on the left
+                } => myhide.statscovid
             }
         }
         page myPageOne "pageTwo" {

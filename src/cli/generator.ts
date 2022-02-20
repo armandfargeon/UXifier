@@ -2,8 +2,7 @@ import fs from 'fs';
 import { CompositeGeneratorNode, isCrossReference, processGeneratorNode} from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
-import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, PolarChartWidget, ColumnChartWidget, LineChartWidget, isFQN, Color, isModeType, ModeType} from '../language-server/generated/ast';
-import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, Widget, isPopup, Popup} from '../language-server/generated/ast';
+import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, PolarChartWidget, ColumnChartWidget, LineChartWidget, isFQN, Color, isModeType, ModeType,Widget, isPopup, Popup} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
@@ -116,12 +115,14 @@ class GrommetAppGenerator {
      */
     dependencies(isForComponents: boolean): string {
         let dependencies: StringBuilder = new StringBuilder();
-        dependencies.writeln("import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph, Button } from 'grommet';");
+        dependencies.writeln("import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph, Button,Layer } from 'grommet';");
         dependencies.writeln("import { LineChart, PolarChart } from 'grommet-controls/chartjs';");
         dependencies.writeln('import Typography from "@material-ui/core/Typography";');
         dependencies.writeln("import { Row } from 'reactstrap';");
         dependencies.writeln('import Chart from "react-apexcharts";');
         dependencies.writeln("import React from 'react'");
+        dependencies.writeln("import { FormClose } from 'grommet-icons';");
+
         ;
         if(!isForComponents){
             dependencies.writeln("import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data'")
@@ -129,6 +130,7 @@ class GrommetAppGenerator {
             dependencies.writeln("import {ColumnChartWidget} from './components/ColumnChartWidget';\n");
             dependencies.writeln("import {LineChartWidget} from './components/LineChartWidget';\n");
             dependencies.writeln("import {PolarChartWidget} from './components/PolarChartWidget';\n");
+            dependencies.writeln("import {Popup} from './components/Popup';")
             dependencies.writeln("import { acme } from './components/acme-theme';");
             dependencies.writeln("import { deepMerge } from 'grommet/utils';");
 
@@ -350,31 +352,21 @@ class GrommetAppGenerator {
 
     generatePopup(widget:Widget,app:App){
         let sb: StringBuilder = new StringBuilder();
-        sb.writeln("const customTheme = deepMerge(grommet, {");
-        sb.writeln("layer: {");
-        sb.writeln("border: {");
-        sb.writeln("radius: 'large',");
-        sb.writeln("intelligentRounding: true,");
-        sb.writeln("},},});")
-        sb.writeln("export const Popup =({ data, dataPopup , base, pop }) => {");
+        sb.writeln("export const Popup =({ base, pop }) => {");
         sb.writeln('const [open, setOpen] = React.useState(false);')
-        sb.writeln('const [position] = React.useState();')
         sb.writeln('const [full] = React.useState();')
         sb.writeln('const onOpen = () => setOpen(true);')
         sb.writeln('const onClose = () => setOpen(undefined);')
         sb.writeln('return (')
-        sb.writeln('<Grommet theme={customTheme} full>')
-        sb.writeln('<Box fill align="center" justify="center" gap="medium" onClick={onOpen}>')
+        sb.writeln('<Grommet  full>')
+        sb.writeln('<Box fill align="center" justify="center" gap="medium" onClick={onOpen}>')     
         if(isPopup(widget)){
-            widget.base.$type
             sb.writeln( "{base}");
-            //sb.writeln( this.getWidgetFromPopup(widget.base,false));
         }
         sb.writeln('</Box>')
         sb.writeln('{open && (')
         sb.writeln('<Layer')
         sb.writeln('full={full}')
-        sb.writeln('position={position}')
         sb.writeln('onClickOutside={onClose}')
         sb.writeln('onEsc={onClose}')
         sb.writeln('>')
@@ -395,11 +387,11 @@ class GrommetAppGenerator {
         if(isClassicWidget(widget))
             return `<ClassicWidget data={${data}}/>`
         if(isColumnChartWidget(widget))
-            return `<Chart options={${data}.options} series={${data}.series} type="bar" height="300" />`;
+            return `<ColumnChartWidget options={${data}} series={${data}} type="bar" height="300" />`;
         if(isLineChartWidget(widget))
-            return`<LineChart data={${data}.data} />`;
+            return`<LineChartWidget data={${data}} />`;
         if(isPolarChartWidget(widget))
-            return `<PolarChart data={${data}.data} options={${data}.options} />`;
+            return `<PolarChartWidget data={${data}} options={${data}} />`;
 
         return undefined;
     }
@@ -460,8 +452,8 @@ class GrommetAppGenerator {
                 }
             }else if (isPopup(widget)){
                 if(!typesVisited.includes("Popup")){
-                    typesVisited.push("Popup");
-                    sb.write(this.generatePopup(widget,app))
+                    const columnNode = new CompositeGeneratorNode();
+                    this.populateNode(columnNode, "Popup", this.generatePopup(widget,app), typesVisited, destination);
                 }
             }
         });
