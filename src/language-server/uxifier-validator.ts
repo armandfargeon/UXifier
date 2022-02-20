@@ -1,6 +1,7 @@
-import {ValidationCheck, ValidationRegistry } from 'langium';
-import { UxifierAstType } from './generated/ast';
+import { isCrossReference, ValidationAcceptor, ValidationCheck, ValidationRegistry } from 'langium';
+import { AbstractWidget, isFQN, App, UxifierAstType } from './generated/ast';
 import { UxifierServices } from './uxifier-module';
+import { datas } from './data/data'
 
 /**
  * Map AST node types to validation checks.
@@ -15,7 +16,8 @@ export class UxifierValidationRegistry extends ValidationRegistry {
         super(services);
         const validator = services.validation.UxifierValidator;
         const checks: UxifierChecks = {
-            //Person: validator.checkPersonStartsWithCapital
+            AbstractWidget: validator.checkWidget,
+            App: validator.checkColor
         };
         this.register(checks, validator);
     }
@@ -25,4 +27,34 @@ export class UxifierValidationRegistry extends ValidationRegistry {
  * Implementation of custom validations.
  */
 export class UxifierValidator {
+    checkWidget(widget: AbstractWidget, accept: ValidationAcceptor): void {
+        let isFound = false;
+        const widgetsNames = Object.entries(datas).map(([arr, exported])=> arr) 
+        Object.entries(widgetsNames).forEach(([index, name]) => {
+            if(name == widget.name){
+                isFound = true;
+            }
+        });
+        if(!isFound){
+            accept('warning', `Widget ${widget.name} does not exists.`, { node: widget, property: 'name' }); 
+            accept('info', `Please use one of these following widgets: {${widgetsNames.toString()}}.`, { node: widget, property: 'name' }); 
+        }
+	}
+
+    checkColor(app: App, accept: ValidationAcceptor): void{
+        let colors : (string|undefined)[] = []
+        if(isFQN(app.header.color)){
+            if(isCrossReference(app.header.color.$cstNode?.feature)){
+                for(const colorTheme of app.theme.colors){
+                    let textColor = app.header.color.$cstNode?.text
+                    colors.push(textColor)
+                    if(textColor?.split(".").pop() === colorTheme.name){
+                        return;
+                    }
+                }
+            }
+        }
+        accept('warning', `This color does not exists in ${app.theme.name} theme.`, { node: app.header, property: 'color' }); 
+        accept('info', `Please use one of these following colors: {${colors.toString().replaceAll(',', ', ')}}.`, { node: app.header, property: 'color' }); 
+    }
 }

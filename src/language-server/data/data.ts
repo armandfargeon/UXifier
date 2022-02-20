@@ -1,18 +1,18 @@
-export const statscovid = {
+const statscovid = {
   title: "Statistiques Covid",
   icon_url: "shorturl.at/osJY4",
   data: 1590,
   description: "Statistique de la covid-19 référencant un nombre de cas en France"
 };
 
-export const statlicenciement = {
+const statlicenciement = {
   title: "Statistiques Licenciement",
   icon_url: "shorturl.at/osJY4",
   data: 19,
   description: "Statistique de licensiement référencant un nombre de licensiement en 2022"
 };
 
-export const statCasContact = {
+const statCasContact = {
   title: "Statistiques Cas contact covid",
   data: {
     labels: ["January", "February", "March", "April", "May", "June", "July"],
@@ -32,7 +32,7 @@ export const statCasContact = {
   description: "Statistique de licensiement référencant un nombre de licensiement en 2022"
 };
 
-export const statParticipation = {
+const statParticipation = {
   title: "Statistiques participation",
   data: {
     labels: ["January", "February", "March", "April", "May", "June", "July"],
@@ -59,7 +59,7 @@ export const statParticipation = {
   description: "Statistique de licensiement référencant un nombre de licensiement en 2022"
 };
 
-export const statCrypto = {
+const statCrypto = {
   title: "Statistiques des cryptos monaies",
   description: "Les cryptos montant sur le marché",
   options: {
@@ -105,3 +105,5 @@ export const statCrypto = {
     data: [28]
   }],
 };
+
+export const datas = {statscovid: statscovid, statlicenciement:statlicenciement, statCasContact:statCasContact, statParticipation:statParticipation, statCrypto:statCrypto}
