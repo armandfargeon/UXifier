@@ -1,13 +1,21 @@
 
             //groomet app generated : dsl
-            import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph } from 'grommet'; 
+            import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph,Button,Layer } from 'grommet'; 
 
                 import { LineChart, PolarChart } from 'grommet-controls/chartjs';
                 import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data' 
 
-                import Typography from "@material-ui/core/Typography"; 
+                //import Typography from "@material-ui/core/Typography"; 
 
                 import { Row } from 'reactstrap';
+
+                import { grommet } from 'grommet/themes';
+
+                import { deepMerge } from 'grommet/utils';
+
+                import { FormClose } from 'grommet-icons';
+
+                import React from 'react';
 
                 import Chart from "react-apexcharts";
 
@@ -27,43 +35,41 @@
 
 );
  
-export const ColumnChartWidget= ({ data }) => (
-<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row">
-<Box round="5px" background="#FFF" align="center" pad="small" >
-<Box align="center" justify="center" pad="xsmall" margin="xsmall">
-<Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>
-<Paragraph size="small" margin="medium" textAlign="center"> {data.description} </Paragraph>
-
-<div id="chart" className="grommet__container">
-<Box pad="small" elevation="medium">
-<div className="title-chart">
-<Row>
-<Typography variant="h6" className="title-chart">{data.title}</Typography>
-</Row>
-<Typography variant="subtitle1">{data.description}</Typography>
-</div>
-<Chart options={data.options} series={data.series} type="bar" height="300" />
+const customTheme = deepMerge(grommet, {
+layer: {
+border: {
+radius: 'large',
+intelligentRounding: true,
+},},});
+export const Popup =({ data, dataPopup , base, pop }) => {
+const [open, setOpen] = React.useState(false);
+const [position] = React.useState();
+const [full] = React.useState();
+const onOpen = () => setOpen(true);
+const onClose = () => setOpen(undefined);
+return (
+<Grommet theme={customTheme} full>
+<Box fill align="center" justify="center" gap="medium" onClick={onOpen}>
+{base}
 </Box>
-</div>
-
+{open && (
+<Layer
+full={full}
+position={position}
+onClickOutside={onClose}
+onEsc={onClose}
+>
+<Box
+pad="medium"
+gap="small"
+width={{ min: "medium" }}
+height={{ min: "small" }}
+fill >
+<Button alignSelf="end" icon={<FormClose />} onClick={onClose} />
+{pop}
 </Box>
-</Box>
-</Box>
-
-);
-export const LineChartWidget= ({ data }) => (
-<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row">
-<Box round="5px" background="#FFF" align="center" pad="small" >
-<Box align="center" justify="center" pad="xsmall" margin="xsmall">
-<Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>
-<Paragraph size="small" margin="medium" textAlign="center"> {data.description} </Paragraph>
-
-<LineChart data={data.data} />
-</Box>
-</Box>
-</Box>
-
-);
+</Layer>)}
+</Grommet>);};
 export const PolarChartWidget= ({ data }) => (
 <Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row">
 <Box round="5px" background="#FFF" align="center" pad="small" >
@@ -96,8 +102,8 @@ export const PolarChartWidget= ({ data }) => (
 			<Tab  title="pageOne">
 					<Box name="widgetWrapperOne" 
  width="100"> 
-<ClassicWidget data={ statscovid }/>
-<ColumnChartWidget data={ statCrypto }/>
+<ClassicWidget data={ statlicenciement }/>
+<Popup  base ={<LineChart data={statCasContact.data} />} pop= {<PolarChart data={statParticipation.data} options={statParticipation.options} />} />
 
 					</Box>
 			</Tab>
@@ -105,8 +111,7 @@ export const PolarChartWidget= ({ data }) => (
 					<Box name="widgetWrapperOne" 
  width="100"> 
 <ClassicWidget data={ statlicenciement }/>
-<LineChartWidget data={ statCasContact }/>
-<PolarChartWidget data={ statParticipation }/>
+<Popup  base ={<LineChart data={statCasContact.data} />} pop= {<ClassicWidget data={statlicenciement}/>} />
 
 					</Box>
 			</Tab>

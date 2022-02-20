@@ -7,18 +7,23 @@ app dsl {
         } 
     }
     header AppBar title "test" logo "www.image-url.com" level 3
+    hide hide1 {
+        polarchart statParticipation 
+        classic statlicenciement icon: "shorturl.at/osJY4"
+
+    }
     menu MyMenu {
         page myPageOne "pageOne" {
             widgetWrapper widgetWrapperOne width: 100 px {
-                classic statscovid icon: "shorturl.at/osJY4"
-                columnchart statCrypto downloadeable "true"
+                classic statlicenciement icon: "shorturl.at/osJY4"
+                popup pop1 linechart statCasContact x: "nombre de cas" y: "années"   => hide1.statParticipation
             }
         }
         page myPageOne "pageTwo" {
             widgetWrapper widgetWrapperOne width: 100 px {
                 classic statlicenciement icon: "shorturl.at/osJY4"
-                linechart statCasContact x: "nombre de cas" y: "années" 
-                polarchart statParticipation 
+                popup pop1 linechart statCasContact x: "nombre de cas" y: "années"   => hide1.statlicenciement
+ 
             }
         }
     }

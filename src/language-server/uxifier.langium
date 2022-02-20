@@ -6,7 +6,9 @@ App:
         '{'
             theme=Theme
             header=Header
+            hide=Hidden
             menu=Menu
+            
         '}';
 Theme:
     'theme' name=ID 
@@ -16,6 +18,13 @@ Theme:
                 (colors+=Color)*
             '}'
         '}';
+
+Hidden:
+    'hide' name=ID 
+        '{'
+            (widgets+=AbstractWidget)*
+        '}';
+
 
 Color:
     'color' name=ID 'code' code=STRING;
@@ -40,9 +49,15 @@ PolarChartWidget:
 
 WidgetWrapper:
     'widgetWrapper' name=ID "width:" width=INT 'px' '{' 
-        widgets+=AbstractWidget
-        (widgets+=AbstractWidget)*
+        widgets+=Widget
+        (widgets+=Widget)*
     '}';
+
+Popup:
+  'popup' name=ID  base=AbstractWidget "=>" popup=[AbstractWidget|FQN]?;
+
+Widget:
+    AbstractWidget | Popup;
 
 Page:
     'page' name=ID title=STRING '{' 
@@ -53,6 +68,11 @@ Menu:
     'menu' name=ID '{' 
         (pages+=Page)* 
     '}';
+
+FQN:
+    {FQN}
+	ID ('.' ID)*
+;
 
 terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

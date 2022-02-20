@@ -2,7 +2,7 @@ import fs from 'fs';
 import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
-import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget} from '../language-server/generated/ast';
+import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, Widget, isPopup, Popup} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
 
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
@@ -58,11 +58,15 @@ class GrommetAppGenerator {
      * //todo le faire dynamiquement
      */
     dependencies(): string {
-        return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph } from 'grommet'; \n
+        return `import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph,Button,Layer } from 'grommet'; \n
                 import { LineChart, PolarChart } from 'grommet-controls/chartjs';
                 import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data' \n
-                import Typography from "@material-ui/core/Typography"; \n
+                //import Typography from "@material-ui/core/Typography"; \n
                 import { Row } from 'reactstrap';\n
+                import { grommet } from 'grommet/themes';\n
+                import { deepMerge } from 'grommet/utils';\n
+                import { FormClose } from 'grommet-icons';\n
+                import React from 'react';\n
                 import Chart from "react-apexcharts";\n`;
     }
 
@@ -125,47 +129,56 @@ class GrommetAppGenerator {
 
     MenuDeclaration(app: App) {
         return `${app.menu}` ? ` const ${app.menu.name} = (props) => (
-        ${this.pagesDeclaration(app.menu.pages)}
+        ${this.pagesDeclaration(app.menu.pages,app)}
         ); `: ` "x"`;
     }
 
-    pagesDeclaration(pages: Page[]) {
+    pagesDeclaration(pages: Page[],app:App) {
         let sb: StringBuilder = new StringBuilder();
         sb.write("\t\t<Tabs>\n")
         pages.forEach((page) => {
-            sb.write(`\t\t\t<Tab  title="${page.title}">\n` + this.PageDeclaration(page) + "\t\t\t</Tab>\n")
+            sb.write(`\t\t\t<Tab  title="${page.title}">\n` + this.PageDeclaration(page,app) + "\t\t\t</Tab>\n")
         })
         sb.write("\t\t</Tabs>\n")
         return sb.toString()
     }
 
-    PageDeclaration(page: Page) {
+    PageDeclaration(page: Page,app:App) {
         let pageWW = ""
         page.widgetWrappers.forEach(widget => {
-            pageWW += this.WidgetWrapperDeclaration(widget)
+            pageWW += this.WidgetWrapperDeclaration(widget,app)
         })
         return pageWW;
     }
 
-    WidgetWrappersDeclaration(widgetWrappers: WidgetWrapper[]) {
+    WidgetWrappersDeclaration(widgetWrappers: WidgetWrapper[],app:App) {
         let widgetWrappersStr = "\t\t\t\t<Box> \n"
         widgetWrappers.forEach(widget => {
-            widgetWrappersStr += this.WidgetWrapperDeclaration(widget)
+            widgetWrappersStr += this.WidgetWrapperDeclaration(widget,app)
         })
         widgetWrappersStr += "\n\t\t\t\t</Box>"
         return widgetWrappersStr;
     }
 
-    WidgetWrapperDeclaration(widgetWrapperObj: WidgetWrapper) {
+    WidgetWrapperDeclaration(widgetWrapperObj: WidgetWrapper,app:App) {
         let widgets = `\t\t\t\t\t<Box name="${widgetWrapperObj.name}" \n width="${widgetWrapperObj.width}"> \n`
         widgetWrapperObj.widgets.forEach(widget => {
-            widgets += this.generateWidgetTag(widget)
+            widgets += this.generateWidgetTag(widget,app)
         });
         widgets += "\n\t\t\t\t\t</Box>\n"
         return widgets;
     }
 
-    generateWidgetTag(widget: AbstractWidget): string {
+    generateWidgetTag(widget: AbstractWidget,app:App): string {
+        if(isPopup(widget)){
+            let wid ;
+            if(widget.popup){
+                wid  = this.findWidgetPrivate(widget,app);
+            }
+            if(wid)
+                return `<${widget.$type}  base ={${this.getWidgetFromPopup(widget.base,widget.base.name)}} pop= {${this.getWidgetFromPopup(wid,wid.name)}} />\n`
+        }
+        
         return `<${widget.$type} data={ ${widget.name} }/>\n`
     }
 
@@ -240,34 +253,79 @@ class GrommetAppGenerator {
         sb.writeln(');');
         return sb.toString();
     }
+    
+    generatePopup(widget:Widget,app:App){
+        let sb: StringBuilder = new StringBuilder();
+        sb.writeln("const customTheme = deepMerge(grommet, {");
+        sb.writeln("layer: {");
+        sb.writeln("border: {");
+        sb.writeln("radius: 'large',");
+        sb.writeln("intelligentRounding: true,");
+        sb.writeln("},},});")
+        sb.writeln("export const Popup =({ data, dataPopup , base, pop }) => {");
+        sb.writeln('const [open, setOpen] = React.useState(false);')
+        sb.writeln('const [position] = React.useState();')
+        sb.writeln('const [full] = React.useState();')
+        sb.writeln('const onOpen = () => setOpen(true);')
+        sb.writeln('const onClose = () => setOpen(undefined);')
+        sb.writeln('return (')
+        sb.writeln('<Grommet theme={customTheme} full>')
+        sb.writeln('<Box fill align="center" justify="center" gap="medium" onClick={onOpen}>')     
+        if(isPopup(widget)){
+            widget.base.$type
+            sb.writeln( "{base}");
+            //sb.writeln( this.getWidgetFromPopup(widget.base,false));
+        }
+        sb.writeln('</Box>')
+        sb.writeln('{open && (')
+        sb.writeln('<Layer')
+        sb.writeln('full={full}')
+        sb.writeln('position={position}')
+        sb.writeln('onClickOutside={onClose}')
+        sb.writeln('onEsc={onClose}')
+        sb.writeln('>')
+        sb.writeln('<Box')
+        sb.writeln('pad="medium"')
+        sb.writeln('gap="small"')
+        sb.writeln('width={{ min: "medium" }}')
+        sb.writeln('height={{ min: "small" }}')
+        sb.writeln('fill >')
+        sb.writeln('<Button alignSelf="end" icon={<FormClose />} onClick={onClose} />');
+        sb.writeln("{pop}")
+        /*if(isPopup(widget) ){
+            if(widget.popup){
+                const wid = this.findWidgetPrivate(widget,app);
+                sb.writeln(wid?.name)
+                if(wid)
+                    sb.writeln(this.getWidgetFromPopup(wid,true));
+            } 
+        }*/
+        sb.writeln('</Box>')
+        sb.writeln('</Layer>)}')
+        sb.writeln('</Grommet>);};')
+        return sb.toString();
+    }
+    getWidgetFromPopup(widget:AbstractWidget, data : string){
+        if(isClassicWidget(widget))
+            return `<ClassicWidget data={${data}}/>`
+        if(isColumnChartWidget(widget))
+            return `<Chart options={${data}.options} series={${data}.series} type="bar" height="300" />`;
+        if(isLineChartWidget(widget))
+            return`<LineChart data={${data}.data} />`;
+        if(isPolarChartWidget(widget))
+            return `<PolarChart data={${data}.data} options={${data}.options} />`;
 
-    // <Box direction="column" gap="large">
-    //     <Box round pad="medium" direction="column" background="white">
-    //         <Box gap="small">
-    //             <div id="chart" className="grommet__container">
-    //                 <Box pad="small" elevation="medium">
-    //                     <div className="title-chart">
-    //                         <Row>
-    //                             <Typography variant="h6" className="title-chart">Titre</Typography>
-    //                         </Row>
-    //                         <Typography variant="subtitle1">Description...</Typography>
-    //                     </div>
-    //                     <Chart
-    //                         options={state.options}
-    //                         series={state.series}
-    //                         type="bar"
-    //                         height="300"
-    //                     />
-    //                 </Box>
-    //             </div>
-    //         </Box>
-    //     </Box>
-    // </Box>
+        return undefined;
+    }
 
     declarationComponents(app: App): string {
-        let widgets: AbstractWidget[] = app.menu.pages.map(p =>
+        let widgets: Widget[] = app.menu.pages.map(p =>
             p.widgetWrappers.map(w=>w.widgets).flat()
         ).flat();
+
+        let hiddens : Widget[] = app.hide.widgets;
+
+        widgets = widgets.concat(hiddens);
 
         let typesVisited : string[] = []
 
@@ -293,8 +351,24 @@ class GrommetAppGenerator {
                     typesVisited.push("ColumnChartWidget")
                     sb.write(this.generateColumnChartWidgetComponent());
                 }
+            }else if (isPopup(widget)){
+                if(!typesVisited.includes("Popup")){
+                    typesVisited.push("Popup");
+                    sb.write(this.generatePopup(widget,app))
+                }
             }
         });
         return sb.toString();
+    }
+
+    findWidgetPrivate(popup: Popup , app :App){
+       let widFinal = popup.$cstNode?.text;
+       widFinal = widFinal?.split(".").pop();
+
+        for(const wid of app.hide.widgets ){
+            if(wid.name == widFinal )
+                return wid;
+        }
+        return undefined;      
     }
 }
