@@ -2,6 +2,7 @@ import { isCrossReference, ValidationAcceptor, ValidationCheck, ValidationRegist
 import { AbstractWidget, isFQN, App, UxifierAstType } from './generated/ast';
 import { UxifierServices } from './uxifier-module';
 import { datas } from './data/data'
+import fs from "fs";
 
 /**
  * Map AST node types to validation checks.
@@ -17,7 +18,7 @@ export class UxifierValidationRegistry extends ValidationRegistry {
         const validator = services.validation.UxifierValidator;
         const checks: UxifierChecks = {
             AbstractWidget: validator.checkWidget,
-            App: validator.checkColor
+            App: [validator.checkColor,validator.checkPath]
         };
         this.register(checks, validator);
     }
@@ -56,5 +57,12 @@ export class UxifierValidator {
         }
         accept('warning', `This color does not exists in ${app.theme.name} theme.`, { node: app.header, property: 'color' }); 
         accept('info', `Please use one of these following colors: {${colors.toString().replaceAll(',', ', ')}}.`, { node: app.header, property: 'color' }); 
+    }
+
+    checkPath(app: App, accept: ValidationAcceptor){
+        if (!fs.existsSync(app.path)) {
+            accept('warning', `Path ${app.path} does not exists.`, { node: app, property: 'path' }); 
+            accept('info', `Please specify the path of you're working Grommet App.`, { node: app, property: 'path' }); 
+        }
     }
 }
