@@ -74,8 +74,16 @@ Widget:
 
 Page:
     'page' name=ID title=STRING '{' 
-        widgetWrappers+=WidgetWrapper 
+        widgetWrappers+=WidgetWrapper* 
+        (platforms+=Platform*)?
     '}';
+
+Platform:
+    'platform' '[' screenSize=('small' | 'medium' | 'large') ']' ':' '{' lines+=Line* '}';
+
+Line: 
+    'line' widgetWrappers+=[WidgetWrapper|ID] ('|' widgetWrappers+=[WidgetWrapper|ID])*;
+
 
 Menu:
     'menu' name=ID '{' 
