@@ -52,6 +52,23 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "value": "{"
           },
           {
+            "$type": "Keyword",
+            "value": "workingDirectory=>"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "path",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "STRING"
+              }
+            },
+            "cardinality": "?"
+          },
+          {
             "$type": "Assignment",
             "feature": "theme",
             "operator": "=",

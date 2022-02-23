@@ -1,4 +1,5 @@
 app dsl {
+    workingDirectory=>"your_path_here_or_nothing"
     theme myTheme {
         colors{
             color black code "#000000"

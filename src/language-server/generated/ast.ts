@@ -12,6 +12,7 @@ export interface App extends AstNode {
     hide: Hidden
     menu: Menu
     name: string
+    path: string
     plugins: Plugins
     theme: Theme
 }

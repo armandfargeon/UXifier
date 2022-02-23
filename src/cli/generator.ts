@@ -10,7 +10,10 @@ export function generateJavaScript(app: App, filePath: string, destination: stri
     const generatedFilePath = `${path.join(data.destination, data.name)}.js`;
     const fileNode = new CompositeGeneratorNode();
     const grommetAppGenerator = new GrommetAppGenerator();
-    fileNode.append(grommetAppGenerator.compile(app, data.destination + "/components"));
+
+    let workingPath: string = "";
+    app.path != null ? workingPath = app.path + "/components": workingPath = data.destination + "/components";
+    fileNode.append(grommetAppGenerator.compile(app, workingPath));
 
     if (!fs.existsSync(data.destination)) {
         fs.mkdirSync(data.destination, { recursive: true });
@@ -20,6 +23,7 @@ export function generateJavaScript(app: App, filePath: string, destination: stri
 }
 
 class GrommetAppGenerator {
+
     /**
      * Entry point
      * @param app 
@@ -426,7 +430,6 @@ class GrommetAppGenerator {
         let hiddens : Widget[] = app.hide.widgets;
 
         widgets = widgets.concat(hiddens);
-
 
         let sb: StringBuilder = new StringBuilder();
         widgets.forEach(widget => {        

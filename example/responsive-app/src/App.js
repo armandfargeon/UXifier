@@ -90,7 +90,7 @@ const MyMenu = (props) => {
           <ClassicWidget data={statlicenciement} width="12%"/>
           <LineChartWidget data={statParticipation} width="49%"/>
           <PolarChartWidget data={statCasContact} width="38%"/>
-        </Line>
+        </Line>""
 
         <Line 
           margin="xsmall" 
