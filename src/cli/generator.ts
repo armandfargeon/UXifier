@@ -271,14 +271,14 @@ class GrommetAppGenerator {
     generateOptionByWidget(widget: AbstractWidget) {
         let sb: StringBuilder = new StringBuilder();
         sb.write("{{ ");
-        if(isPolarChartWidget(widget) && (widget.position)) {
-            let objOptions = {legend_position: widget.position}
+        if(isPolarChartWidget(widget) && (widget.optionsFilters)) {
+            let objOptions = {legend_position: widget.optionsFilters.position}
             sb.write(`themedData: true, legend: { ${this.generatePosition(objOptions)} },`)
-        } else if(isLineChartWidget(widget) && (widget.position)) {
-            let objOptions = {legend_position: widget.position}
+        } else if(isLineChartWidget(widget) && (widget.optionsFilters.position)) {
+            let objOptions = {legend_position: widget.optionsFilters.position}
             sb.write(`legend: { ${this.generatePosition(objOptions)} },`)
-        } else if(isColumnChartWidget(widget) && (widget.position)) {
-            let objOptions = {legend_position: widget.position, column_width: widget.columnWidth}
+        } else if(isColumnChartWidget(widget) && (widget.optionsFilters.position)) {
+            let objOptions = {legend_position: widget.optionsFilters.position, column_width: widget.columnWidth}
             sb.write(`plotOptions: { bar: { columnWidth: '${objOptions.column_width}'} }, xaxis: { categories: ['']},`)
             sb.write(`legend: { ${this.generatePosition(objOptions)} },`)
         }

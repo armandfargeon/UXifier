@@ -565,34 +565,17 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "elements": []
               },
               {
-                "$type": "Group",
-                "elements": [
-                  {
-                    "$type": "Keyword",
-                    "value": "filters",
-                    "elements": []
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": "on"
-                  },
-                  {
-                    "$type": "Keyword",
-                    "value": "the"
-                  },
-                  {
-                    "$type": "Assignment",
-                    "feature": "position",
-                    "operator": "=",
-                    "terminal": {
-                      "$type": "RuleCall",
-                      "arguments": [],
-                      "rule": {
-                        "$refText": "Position"
-                      }
-                    }
+                "$type": "Assignment",
+                "feature": "optionsFilters",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "OptionsFilters"
                   }
-                ],
+                },
+                "elements": [],
                 "cardinality": "?"
               },
               {
@@ -693,28 +676,18 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "elements": []
               },
               {
-                "$type": "Keyword",
-                "value": "filters"
-              },
-              {
-                "$type": "Keyword",
-                "value": "on"
-              },
-              {
-                "$type": "Keyword",
-                "value": "the"
-              },
-              {
                 "$type": "Assignment",
-                "feature": "position",
+                "feature": "optionsFilters",
                 "operator": "=",
                 "terminal": {
                   "$type": "RuleCall",
                   "arguments": [],
                   "rule": {
-                    "$refText": "Position"
+                    "$refText": "OptionsFilters"
                   }
-                }
+                },
+                "elements": [],
+                "cardinality": "?"
               },
               {
                 "$type": "Keyword",
@@ -760,28 +733,18 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "elements": []
               },
               {
-                "$type": "Keyword",
-                "value": "filters"
-              },
-              {
-                "$type": "Keyword",
-                "value": "on"
-              },
-              {
-                "$type": "Keyword",
-                "value": "the"
-              },
-              {
                 "$type": "Assignment",
-                "feature": "position",
+                "feature": "optionsFilters",
                 "operator": "=",
                 "terminal": {
                   "$type": "RuleCall",
                   "arguments": [],
                   "rule": {
-                    "$refText": "Position"
+                    "$refText": "OptionsFilters"
                   }
-                }
+                },
+                "elements": [],
+                "cardinality": "?"
               },
               {
                 "$type": "Keyword",
@@ -789,6 +752,42 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               }
             ],
             "cardinality": "?"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "OptionsFilters",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "filters",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "on"
+          },
+          {
+            "$type": "Keyword",
+            "value": "the"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "position",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Position"
+              }
+            }
           }
         ]
       }

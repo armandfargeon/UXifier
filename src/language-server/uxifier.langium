@@ -50,16 +50,15 @@ ClassicWidget:
 
 ColumnChartWidget:
     'columnchart' name=ID
-        ("{" ("filters" "on" "the" position=Position)? ("column" "width" "measures" columnWidth=STRING)? ('downloadeable' downloadeable=STRING)? "}")?;
+        ("{" ( optionsFilters=OptionsFilters )? ("column" "width" "measures" columnWidth=STRING)? ('downloadeable' downloadeable=STRING)? "}")?;
 
-LineChartWidget:
-    'linechart' name=ID
-        ("{" "filters" "on" "the" position=Position  "}")?;
+LineChartWidget: 
+    'linechart' name=ID ("{" (optionsFilters=OptionsFilters)?  "}" )?;
 
 PolarChartWidget:
-    'polarchart' name=ID
-        ("{" "filters" "on" "the" position=Position  "}")?;
+    'polarchart' name=ID ("{"(optionsFilters=OptionsFilters )? "}" )?;
 
+OptionsFilters: "filters" "on" "the" position=Position;
 
 WidgetWrapper:
     'widgetWrapper' name=ID "width:" width=INT 'px' '{' 
@@ -68,7 +67,7 @@ WidgetWrapper:
     '}';
 
 Popup:
-  'popup' name=ID  base=AbstractWidget "=>" popup=[AbstractWidget|FQN]?;
+  'popup' name=ID "=>" popup=[AbstractWidget|FQN]? base=AbstractWidget;
 
 Widget:
     AbstractWidget | Popup;
