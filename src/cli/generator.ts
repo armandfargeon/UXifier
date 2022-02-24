@@ -269,13 +269,13 @@ class GrommetAppGenerator {
         sb.write("{{ ");
         if(isPolarChartWidget(widget) && (widget.position)) {
             let objOptions = {legend_position: widget.position}
-            sb.write(`themedData: true, legend: { ${this.generatePosition(objOptions)} },`)
+            sb.write(`themedData: true, legend: { ${this.generatePosition(objOptions)} },maintainAspectRatio: true`)
         } else if(isLineChartWidget(widget) && (widget.position)) {
             let objOptions = {legend_position: widget.position}
-            sb.write(`legend: { ${this.generatePosition(objOptions)} },`)
+            sb.write(`legend: { ${this.generatePosition(objOptions)} },maintainAspectRatio: true `)
         } else if(isColumnChartWidget(widget) && (widget.position)) {
             let objOptions = {legend_position: widget.position, column_width: widget.columnWidth}
-            sb.write(`plotOptions: { bar: { columnWidth: '${objOptions.column_width}'} }, xaxis: { categories: ['']},`)
+            sb.write(`plotOptions: { bar: { columnWidth: '${objOptions.column_width}'} }, xaxis: { categories: ['']},,maintainAspectRatio: true ,`)
             sb.write(`legend: { ${this.generatePosition(objOptions)} },`)
         }
         sb.write(" }}");
