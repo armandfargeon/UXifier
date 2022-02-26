@@ -1,4 +1,5 @@
 app dsl {
+    workingDirectory=>"your_path_here_or_nothing"
     theme myTheme {
         colors{
             color black code "#000000"
@@ -20,9 +21,9 @@ app dsl {
                     column width measures "45%"
                     downloadeable "true"
                 }
-                popup popu1 polarchart statParticipation { 
+                popup popu1 => myhide.statscovid polarchart statParticipation { 
                     filters on the left
-                } => myhide.statscovid
+                }
             }
         }
         page myPageOne "pageTwo" {

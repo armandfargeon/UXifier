@@ -1,0 +1,102 @@
+{
+		"Declare a theme": {
+		"scope": "uxifier",
+		"prefix": "theme",
+		"body": [
+			"theme $1 {",
+				"$2",
+			"}"
+		],
+		"description": "Declare a theme"
+	},
+	"Declare a menu": {
+		"scope": "uxifier",
+		"prefix": "menu",
+		"body": [
+			"menu $1 {",
+				"$2",
+			"}"
+		],
+		"description": "Declare a menu"
+	},
+	"Declare a page": {
+		"scope": "uxifier",
+		"prefix": "page",
+		"body": [
+			"page $1 \"$2\" {",
+				"$3",
+			"}"
+		],
+		"description": "Declare a page"
+	},
+	"Declare a widget wrapper": {
+		"scope": "uxifier",
+		"prefix": "ww",
+		"body": [
+			"widgetWrapper $1 width: $2 px {",
+				"$3",
+			"}"
+		],
+		"description": "Declare a widget wrapper"
+	},
+	"Declare a plugin": {
+		"scope": "uxifier",
+		"prefix": "plug",
+		"body": [
+			"plugins {",
+				"$1",
+			"}"
+		],
+		"description": "Declare a widget wrapper"
+	},
+	"Declare a set of colors": {
+		"scope": "uxifier",
+		"prefix": "colors",
+		"body": [
+			"colors {",
+				"$1",
+			"}"
+		],
+		"description": "Declare a set of colors"
+	},
+	"Declare a color": {
+		"scope": "uxifier",
+		"prefix": "color",
+		"body": [
+			"color $1 code \"$2\"",
+		],
+		"description": "Declare a set of colors"
+	},
+	"Create header": {
+		"scope": "uxifier",
+		"prefix": ["header", "head", "hd"],
+		"body": [
+			"header AppBar title \"$1\" logo \"$2\" level $3 myTheme.$4"
+		],
+		"description": "Header Initialization"
+	},
+	"Working directory": {
+		"scope": "uxifier",
+		"prefix": ["workingDirectory", "wd", "dir"],
+		"body": [
+			"workingDirectory=>\"$1\""
+		],
+		"description": "Working directory of grommet App"
+	},
+	"Pop widgets hidden": {
+		"scope": "uxifier",
+		"prefix": ["hide"],
+		"body": [
+			"hide \"$1\" {\n $2 \n}"
+		],
+		"description": "Declation of hidden widgets that gone be popups"
+	},
+	"Create App": {
+		"scope": "uxifier",
+		"prefix": ["app"],
+		"body": [
+			"app $1 {\n $2 \n}"
+		],
+		"description": "App"
+	}
+}

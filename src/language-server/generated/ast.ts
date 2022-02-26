@@ -12,6 +12,7 @@ export interface App extends AstNode {
     hide: Hidden
     menu: Menu
     name: string
+    path: string
     plugins: Plugins
     theme: Theme
 }
@@ -103,6 +104,17 @@ export const ModeType = 'ModeType';
 
 export function isModeType(item: unknown): item is ModeType {
     return reflection.isInstance(item, ModeType);
+}
+
+export interface OptionsFilters extends AstNode {
+    readonly $container: ColumnChartWidget | LineChartWidget | PolarChartWidget;
+    position: Position
+}
+
+export const OptionsFilters = 'OptionsFilters';
+
+export function isOptionsFilters(item: unknown): item is OptionsFilters {
+    return reflection.isInstance(item, OptionsFilters);
 }
 
 export interface Page extends AstNode {
@@ -210,7 +222,7 @@ export function isClassicWidget(item: unknown): item is ClassicWidget {
 export interface ColumnChartWidget extends AbstractWidget {
     columnWidth: string
     downloadeable: string
-    position: Position
+    optionsFilters: OptionsFilters
 }
 
 export const ColumnChartWidget = 'ColumnChartWidget';
@@ -220,7 +232,7 @@ export function isColumnChartWidget(item: unknown): item is ColumnChartWidget {
 }
 
 export interface LineChartWidget extends AbstractWidget {
-    position: Position
+    optionsFilters: OptionsFilters
 }
 
 export const LineChartWidget = 'LineChartWidget';
@@ -230,7 +242,7 @@ export function isLineChartWidget(item: unknown): item is LineChartWidget {
 }
 
 export interface PolarChartWidget extends AbstractWidget {
-    position: Position
+    optionsFilters: OptionsFilters
 }
 
 export const PolarChartWidget = 'PolarChartWidget';
@@ -243,14 +255,15 @@ export type Position = 'left' | 'top' | 'bottom' | 'right'
 
 export type Mode = 'DarkMode' | 'DaltonienMode' | 'VisionReduiteMode'
 
-export type UxifierAstType = 'App' | 'Color' | 'FQN' | 'Header' | 'Hidden' | 'Line' | 'Menu' | 'ModeType' | 'Page' | 'Platform' | 'Plugins' | 'Theme' | 'Widget' | 'WidgetWrapper' | 'AbstractWidget' | 'Popup' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
+
+export type UxifierAstType = 'App' | 'Color' | 'FQN' | 'Header' | 'Hidden' | 'Line' | 'Menu' | 'OptionsFilters' | 'ModeType' | 'Page' | 'Platform' | 'Plugins' | 'Theme' | 'Widget' | 'WidgetWrapper' | 'AbstractWidget' | 'Popup' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
 
 export type UxifierAstReference = 'Header:color' | 'Line:widgetWrappers' | 'Popup:popup';
 
 export class UxifierAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['App', 'Color', 'FQN', 'Header', 'Hidden', 'Line', 'Menu', 'ModeType', 'Page', 'Platform', 'Plugins', 'Theme', 'Widget', 'WidgetWrapper', 'AbstractWidget', 'Popup', 'ClassicWidget', 'ColumnChartWidget', 'LineChartWidget', 'PolarChartWidget'];
+        return ['App', 'Color', 'FQN', 'Header', 'Hidden', 'Line', 'Menu', 'ModeType', 'OptionsFilters', 'Page', 'Platform', 'Plugins', 'Theme', 'Widget', 'WidgetWrapper', 'AbstractWidget', 'Popup', 'ClassicWidget', 'ColumnChartWidget', 'LineChartWidget', 'PolarChartWidget'];
     }
 
     isInstance(node: unknown, type: string): boolean {
