@@ -19,6 +19,7 @@ import { PolarChartWidget } from './components/PolarChartWidget';
 import { Popup } from './components/Popup';
 import { acme } from './components/acme-theme';
 import { deepMerge } from 'grommet/utils';
+import DarkModeToggle from 'react-dark-mode-toggle'
 
 const DarkMode = deepMerge(Grommet, acme);
 
@@ -204,12 +205,11 @@ function App() {
       </Box>
       <div style={{ position: "relative" }}>
         <div style={{ position: 'absolute', left: 0 }}>
-          <Button
-            label="Toggle Dark/Light Mode"
-            primary
-            alignSelf="center"
-            margin="large"
-            onClick={() => setDarkMode(!darkMode)}
+          <DarkModeToggle
+            onChange={setDarkMode}
+            checked={darkMode}
+            size={80}
+            margin="xsmall"
           />
         </div>
       </div>
