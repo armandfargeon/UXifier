@@ -2,9 +2,8 @@ import fs from 'fs';
 import { CompositeGeneratorNode, isCrossReference, processGeneratorNode} from 'langium';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
-import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, PolarChartWidget, ColumnChartWidget, LineChartWidget, isFQN, Color, isModeType, ModeType,Widget, isPopup, Popup} from '../language-server/generated/ast';
+import { AbstractWidget, App, isLineChartWidget, isClassicWidget, Page, WidgetWrapper, isPolarChartWidget, isColumnChartWidget, PolarChartWidget, ColumnChartWidget, LineChartWidget, isFQN, Color, isModeType, ModeType,Widget, isPopup, Popup, Platform} from '../language-server/generated/ast';
 import { StringBuilder } from '../utils/StringBuilder';
-
 export function generateJavaScript(app: App, filePath: string, destination: string | undefined): string {
     const data = extractDestinationAndName(filePath, destination);
     const generatedFilePath = `${path.join(data.destination, data.name)}.js`;
@@ -21,6 +20,7 @@ export function generateJavaScript(app: App, filePath: string, destination: stri
     fs.writeFileSync(generatedFilePath, processGeneratorNode(fileNode));
     return generatedFilePath;
 }
+
 
 class GrommetAppGenerator {
 
@@ -63,12 +63,11 @@ class GrommetAppGenerator {
                 let pos: string = `${darkMode.posX}`;
                 plugins.writeln('<div style={{ position: "relative"}}>')
                 plugins.writeln("<div style={{ position: 'absolute', " + pos + ": 0}}>")
-                plugins.writeln("<Button");
-                plugins.writeln('label="Toggle Dark/Light Mode"');
-                plugins.writeln("primary");
-                plugins.writeln('alignSelf="center"');
-                plugins.writeln('margin="large"')
-                plugins.writeln("onClick={() => setDarkMode(!darkMode)}")
+                plugins.writeln("<DarkModeToggle");
+                plugins.writeln('onChange={setDarkMode}');
+                plugins.writeln("checked={darkMode}");
+                plugins.writeln('size={80}');
+                plugins.writeln('margin="xsmall"')
                 plugins.writeln("/>\n</div>\n</div>");
             }
         }
@@ -119,7 +118,7 @@ class GrommetAppGenerator {
      */
     dependencies(isForComponents: boolean): string {
         let dependencies: StringBuilder = new StringBuilder();
-        dependencies.writeln("import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph, Button,Layer } from 'grommet';");
+        dependencies.writeln("import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph, Button,Layer,ResponsiveContext } from 'grommet';");
         dependencies.writeln("import { LineChart, PolarChart } from 'grommet-controls/chartjs';");
         dependencies.writeln('import Typography from "@material-ui/core/Typography";');
         dependencies.writeln("import { Row } from 'reactstrap';");
@@ -137,7 +136,7 @@ class GrommetAppGenerator {
             dependencies.writeln("import {Popup} from './components/Popup';")
             dependencies.writeln("import { acme } from './components/acme-theme';");
             dependencies.writeln("import { deepMerge } from 'grommet/utils';");
-
+            dependencies.writeln("import DarkModeToggle from 'react-dark-mode-toggle'");
 
         }
         return dependencies.toString();
@@ -178,7 +177,11 @@ class GrommetAppGenerator {
 
     headerDeclaration(app: App): string {
         let colorTheme : Color|undefined = this.findColorHeader(app)
-        return `${app.header}` ? ` const ${this.capitalizeFirstLetter(app.header.name)} = (props) => (
+        return `const Line = (props) => (
+            <Box
+              {...props}
+            />
+          );` + (`${app.header}` ? ` const ${this.capitalizeFirstLetter(app.header.name)} = (props) => (
             <Box
                 tag='header'    
                 direction='row'
@@ -190,7 +193,7 @@ class GrommetAppGenerator {
                 style={{ zIndex: '1' }}
                 {...props}
             />
-        ); `: ` "x"`;
+        ); `: ` "x"`);
     }
 
     ///////////////////////////////////MENU && WIDGET
@@ -202,27 +205,64 @@ class GrommetAppGenerator {
     }
 
     MenuDeclaration(app: App) {
-        return `${app.menu}` ? ` const ${app.menu.name} = (props) => (
-        ${this.pagesDeclaration(app.menu.pages,app)}
-        ); `: ` "x"`;
+        return `${app.menu}` ? ` const ${app.menu.name} = (props) => {
+        const size = React.useContext(ResponsiveContext);
+        switch(size) {
+            case 'small':
+                return (${this.pagesDeclaration(app.menu.pages,app,  'small')});
+            case 'medium':
+                return (${this.pagesDeclaration(app.menu.pages,app, 'medium')});
+            case 'large':
+                return (${this.pagesDeclaration(app.menu.pages,app, 'large')});
+            default:
+                return (${this.pagesDeclaration(app.menu.pages,app, 'default')});
+        }
+        }; `: ` "x"`;
     }
 
-    pagesDeclaration(pages: Page[],app:App) {
+    pagesDeclaration(pages: Page[],app:App, screenSize: string) {
         let sb: StringBuilder = new StringBuilder();
         sb.write("\t\t<Tabs>\n")
         pages.forEach((page) => {
-            sb.write(`\t\t\t<Tab  title="${page.title}">\n` + this.PageDeclaration(page,app) + "\t\t\t</Tab>\n")
+            sb.write(`\t\t\t<Tab  title="${page.title}">\n` + this.PageDeclaration(page,app, screenSize) + "\t\t\t</Tab>\n")
         })
         sb.write("\t\t</Tabs>\n")
         return sb.toString()
     }
 
-    PageDeclaration(page: Page,app:App) {
-        let pageWW = ""
+    PageDeclaration(page: Page,app:App, screenSize: string) {
+        let pageWW = '';
         page.widgetWrappers.forEach(widget => {
             pageWW += this.WidgetWrapperDeclaration(widget,app)
         })
-        return pageWW;
+        return this.platformsDeclaration(pageWW, page.platforms, app, screenSize)
+    }
+
+    platformsDeclaration(defaultStr: string, platforms: Platform[], app: App, screenSize: string): string {
+
+        let platform = platforms.find(p => p.screenSize == screenSize);
+        if (platform == undefined)
+        {
+            return defaultStr;
+        }
+        return this.platformDeclaration(platform, app);
+
+    }
+
+    platformDeclaration(platform: Platform, app: App): string {
+        let platformStr = '';
+        platform.lines.forEach(line => {
+            platformStr += `<Line 
+            margin="xsmall" 
+            direction="row" 
+            gap="xsmall" 
+          >`
+            line.widgetWrappers.forEach(widget => {
+                platformStr += this.WidgetWrapperDeclaration(widget.ref!,app);
+            })
+            platformStr += '</Line>'
+        } )
+        return platformStr;
     }
 
     WidgetWrappersDeclaration(widgetWrappers: WidgetWrapper[],app:App) {
@@ -235,15 +275,16 @@ class GrommetAppGenerator {
     }
 
     WidgetWrapperDeclaration(widgetWrapperObj: WidgetWrapper,app:App) {
-        let widgets = `\t\t\t\t\t<Box name="${widgetWrapperObj.name}" \n width="${widgetWrapperObj.width}"> \n`
+        let widgets = `\t\t\t\t\t<Box name="${widgetWrapperObj.name}" \n width="${widgetWrapperObj.width}%" direction="row" overflow="auto"> \n`
+        let sizeEachWidget = 100 / widgetWrapperObj.widgets.filter(w => !isPopup(w)).length
         widgetWrapperObj.widgets.forEach(widget => {
-            widgets += this.generateWidgetTag(widget,app)
+            widgets += this.generateWidgetTag(widget,app, sizeEachWidget)
         });
         widgets += "\n\t\t\t\t\t</Box>\n"
         return widgets;
     }
 
-    generateWidgetTag(widget: AbstractWidget,app:App): string {
+    generateWidgetTag(widget: AbstractWidget,app:App, widgetSize?: number): string {
         if(isPopup(widget)){
             let wid ;
             if(widget.popup){
@@ -253,11 +294,11 @@ class GrommetAppGenerator {
                 return `<${widget.$type}  base ={${this.getWidgetFromPopup(widget.base,widget.base.name)}} pop= {${this.getWidgetFromPopup(wid,wid.name)}} />\n`
         }
 
-        return `<${widget.$type} data={ ${widget.name} }/>\n`
+        return `<${widget.$type} data={ ${widget.name}} width="${Math.round(widgetSize!)}%"/>\n`
     }
 
     declareConst(name: string): string {
-        return "export const " + name + "= ({ data }) => (";
+        return "export const " + name + "= ({ data, width }) => (";
     }
 
     generatePosition(objOptions:any){
@@ -271,15 +312,15 @@ class GrommetAppGenerator {
     generateOptionByWidget(widget: AbstractWidget) {
         let sb: StringBuilder = new StringBuilder();
         sb.write("{{ ");
-        if(isPolarChartWidget(widget) && (widget.position)) {
-            let objOptions = {legend_position: widget.position}
-            sb.write(`themedData: true, legend: { ${this.generatePosition(objOptions)} },maintainAspectRatio: true`)
-        } else if(isLineChartWidget(widget) && (widget.position)) {
-            let objOptions = {legend_position: widget.position}
-            sb.write(`legend: { ${this.generatePosition(objOptions)} },maintainAspectRatio: true `)
-        } else if(isColumnChartWidget(widget) && (widget.position)) {
-            let objOptions = {legend_position: widget.position, column_width: widget.columnWidth}
-            sb.write(`plotOptions: { bar: { columnWidth: '${objOptions.column_width}'} }, xaxis: { categories: ['']},,maintainAspectRatio: true ,`)
+        if(isPolarChartWidget(widget) && (widget.optionsFilters)) {
+            let objOptions = {legend_position: widget.optionsFilters.position}
+            sb.write(`themedData: true, legend: { ${this.generatePosition(objOptions)} },`)
+        } else if(isLineChartWidget(widget) && (widget.optionsFilters.position)) {
+            let objOptions = {legend_position: widget.optionsFilters.position}
+            sb.write(`legend: { ${this.generatePosition(objOptions)} },`)
+        } else if(isColumnChartWidget(widget) && (widget.optionsFilters.position)) {
+            let objOptions = {legend_position: widget.optionsFilters.position, column_width: widget.columnWidth}
+            sb.write(`plotOptions: { bar: { columnWidth: '${objOptions.column_width}'} }, xaxis: { categories: ['']},`)
             sb.write(`legend: { ${this.generatePosition(objOptions)} },`)
         }
         sb.write(" }}");
@@ -291,7 +332,9 @@ class GrommetAppGenerator {
         sb.writeln(this.declareConst("ClassicWidget"));
         sb.writeln(this.generateFirstTagWidgetContainer());
         sb.writeln("<Text alignSelf=\"center\" size=\"90px\" weight=\"bold\"> {data.data} </Text> \n");
-        sb.writeln("<Image fit=\"cover\" src={data.icon_url}/>");
+        sb.writeln("<Box width=\"50%\">")
+        sb.writeln("<Image fit=\"contain\" src={data.icon_url} fill=\"true\"/>");
+        sb.writeln("</Box>")
         sb.writeln(this.generateLastTagWidgetContainer());
         sb.write(");\n \n");
         return sb.toString();
@@ -309,7 +352,7 @@ class GrommetAppGenerator {
 
     generateFirstTagWidgetContainer(){
         let sb: StringBuilder = new StringBuilder();
-        sb.writeln('<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row">');
+        sb.writeln('<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row" width={width}>');
         sb.writeln('<Box round="5px" background="#FFF" align="center" pad="small" >');
         sb.writeln('<Box align="center" justify="center" pad="xsmall" margin="xsmall">');   
         sb.writeln(`<Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>`);

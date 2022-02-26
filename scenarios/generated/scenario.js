@@ -1,6 +1,6 @@
 
             //groomet app generated : dsl
-            import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph, Button,Layer } from 'grommet';
+            import { Grommet, Box, Heading, Tabs, Tab, Image, Text, Paragraph, Button,Layer,ResponsiveContext } from 'grommet';
 import { LineChart, PolarChart } from 'grommet-controls/chartjs';
 import Typography from "@material-ui/core/Typography";
 import { Row } from 'reactstrap';
@@ -19,12 +19,17 @@ import {PolarChartWidget} from './components/PolarChartWidget';
 import {Popup} from './components/Popup';
 import { acme } from './components/acme-theme';
 import { deepMerge } from 'grommet/utils';
+import DarkModeToggle from 'react-dark-mode-toggle'
 
             const DarkMode = deepMerge(Grommet, acme);
 
 
             
-             const AppBar = (props) => (
+            const Line = (props) => (
+            <Box
+              {...props}
+            />
+          ); const AppBar = (props) => (
             <Box
                 tag='header'    
                 direction='row'
@@ -37,29 +42,141 @@ import { deepMerge } from 'grommet/utils';
                 {...props}
             />
         ); 
-             const MyMenu = (props) => (
-        		<Tabs>
+             const MyMenu = (props) => {
+        const size = React.useContext(ResponsiveContext);
+        switch(size) {
+            case 'small':
+                return (		<Tabs>
 			<Tab  title="pageOne">
+<Line 
+            margin="xsmall" 
+            direction="row" 
+            gap="xsmall" 
+          >					<Box name="widgetWrapperMobile" 
+ width="100%" direction="row" overflow="auto"> 
+<ColumnChartWidget data={ statCrypto} width="100%"/>
+
+					</Box>
+</Line>			</Tab>
+			<Tab  title="pageTwo">
 					<Box name="widgetWrapperOne" 
- width="100"> 
-<ClassicWidget data={ statscovid }/>
-<ColumnChartWidget data={ statCrypto }/>
-<Popup  base ={<PolarChartWidget data={statParticipation} options={statParticipation} />} pop= {<ClassicWidget data={statscovid}/>} />
+ width="100%" direction="row" overflow="auto"> 
+<ClassicWidget data={ statlicenciement} width="33%"/>
+<LineChartWidget data={ statCasContact} width="33%"/>
+<PolarChartWidget data={ statParticipation} width="33%"/>
+
+					</Box>
+			</Tab>
+		</Tabs>
+);
+            case 'medium':
+                return (		<Tabs>
+			<Tab  title="pageOne">
+<Line 
+            margin="xsmall" 
+            direction="row" 
+            gap="xsmall" 
+          >					<Box name="widgetWrapperOthers" 
+ width="100%" direction="row" overflow="auto"> 
+<ClassicWidget data={ statscovid} width="50%"/>
+<ColumnChartWidget data={ statCrypto} width="50%"/>
+
+					</Box>
+</Line><Line 
+            margin="xsmall" 
+            direction="row" 
+            gap="xsmall" 
+          >					<Box name="widgetWrapperOthers" 
+ width="100%" direction="row" overflow="auto"> 
+<ClassicWidget data={ statscovid} width="50%"/>
+<ColumnChartWidget data={ statCrypto} width="50%"/>
+
+					</Box>
+</Line>			</Tab>
+			<Tab  title="pageTwo">
+					<Box name="widgetWrapperOne" 
+ width="100%" direction="row" overflow="auto"> 
+<ClassicWidget data={ statlicenciement} width="33%"/>
+<LineChartWidget data={ statCasContact} width="33%"/>
+<PolarChartWidget data={ statParticipation} width="33%"/>
+
+					</Box>
+			</Tab>
+		</Tabs>
+);
+            case 'large':
+                return (		<Tabs>
+			<Tab  title="pageOne">
+<Line 
+            margin="xsmall" 
+            direction="row" 
+            gap="xsmall" 
+          >					<Box name="widgetWrapperOthers" 
+ width="100%" direction="row" overflow="auto"> 
+<ClassicWidget data={ statscovid} width="50%"/>
+<ColumnChartWidget data={ statCrypto} width="50%"/>
+
+					</Box>
+</Line><Line 
+            margin="xsmall" 
+            direction="row" 
+            gap="xsmall" 
+          >					<Box name="widgetWrapperOthers" 
+ width="100%" direction="row" overflow="auto"> 
+<ClassicWidget data={ statscovid} width="50%"/>
+<ColumnChartWidget data={ statCrypto} width="50%"/>
+
+					</Box>
+</Line><Line 
+            margin="xsmall" 
+            direction="row" 
+            gap="xsmall" 
+          >					<Box name="widgetWrapperOthers" 
+ width="100%" direction="row" overflow="auto"> 
+<ClassicWidget data={ statscovid} width="50%"/>
+<ColumnChartWidget data={ statCrypto} width="50%"/>
+
+					</Box>
+</Line>			</Tab>
+			<Tab  title="pageTwo">
+					<Box name="widgetWrapperOne" 
+ width="100%" direction="row" overflow="auto"> 
+<ClassicWidget data={ statlicenciement} width="33%"/>
+<LineChartWidget data={ statCasContact} width="33%"/>
+<PolarChartWidget data={ statParticipation} width="33%"/>
+
+					</Box>
+			</Tab>
+		</Tabs>
+);
+            default:
+                return (		<Tabs>
+			<Tab  title="pageOne">
+					<Box name="widgetWrapperMobile" 
+ width="100%" direction="row" overflow="auto"> 
+<ColumnChartWidget data={ statCrypto} width="100%"/>
+
+					</Box>
+					<Box name="widgetWrapperOthers" 
+ width="100%" direction="row" overflow="auto"> 
+<ClassicWidget data={ statscovid} width="50%"/>
+<ColumnChartWidget data={ statCrypto} width="50%"/>
 
 					</Box>
 			</Tab>
 			<Tab  title="pageTwo">
 					<Box name="widgetWrapperOne" 
- width="100"> 
-<ClassicWidget data={ statlicenciement }/>
-<LineChartWidget data={ statCasContact }/>
-<PolarChartWidget data={ statParticipation }/>
+ width="100%" direction="row" overflow="auto"> 
+<ClassicWidget data={ statlicenciement} width="33%"/>
+<LineChartWidget data={ statCasContact} width="33%"/>
+<PolarChartWidget data={ statParticipation} width="33%"/>
 
 					</Box>
 			</Tab>
 		</Tabs>
-
-        ); 
+);
+        }
+        }; 
             
             const myTheme = {
                 global: { 
@@ -85,12 +202,11 @@ return(
 </Box>
 <div style={{ position: "relative"}}>
 <div style={{ position: 'absolute', left: 0}}>
-<Button
-label="Toggle Dark/Light Mode"
-primary
-alignSelf="center"
-margin="large"
-onClick={() => setDarkMode(!darkMode)}
+<DarkModeToggle
+onChange={setDarkMode}
+checked={darkMode}
+size={80}
+margin="xsmall"
 />
 </div>
 </div>

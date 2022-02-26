@@ -5,8 +5,8 @@ import { Row } from 'reactstrap';
 import Chart from "react-apexcharts";
 import React from 'react'
 import { FormClose } from 'grommet-icons';
-export const ClassicWidget= ({ data }) => (
-<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row">
+export const ClassicWidget= ({ data, width }) => (
+<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row" width={width}>
 <Box round="5px" background="#FFF" align="center" pad="small" >
 <Box align="center" justify="center" pad="xsmall" margin="xsmall">
 <Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>
@@ -14,7 +14,7 @@ export const ClassicWidget= ({ data }) => (
 
 <Text alignSelf="center" size="90px" weight="bold"> {data.data} </Text> 
 
-<Image fit="cover" src={data.icon_url}/>
+<Image fit="cover" src={data.icon_url} fill="true"/>
 </Box>
 </Box>
 </Box>

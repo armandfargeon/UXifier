@@ -1,5 +1,5 @@
 app dsl {
-    workingDirectory=>"your_path_here_or_nothing"
+    workingDirectory=>"C:\Users\I553266\Cours\DSL\UXifier\example\responsive-app\src"
     theme myTheme {
         colors{
             color black code "#000000"
@@ -14,20 +14,36 @@ app dsl {
     }
     menu MyMenu {
         page myPageOne "pageOne" {
-            widgetWrapper widgetWrapperOne width: 100 px {
+            widgetWrapper widgetWrapperMobile width: 100 % {
+                columnchart statCrypto {
+                    filters on the left
+                    column width measures "45%"
+                    downloadeable "true"
+                }
+            }
+            widgetWrapper widgetWrapperOthers width: 100 % {
                 classic statscovid
                 columnchart statCrypto {
                     filters on the left
                     column width measures "45%"
                     downloadeable "true"
                 }
-                popup popu1 => myhide.statscovid polarchart statParticipation { 
-                    filters on the left
-                }
+            }
+            platform [small]: {
+                line widgetWrapperMobile
+            } 
+            platform [medium]: {
+                line widgetWrapperOthers
+                line widgetWrapperOthers
+            }
+            platform [large]: {
+                line widgetWrapperOthers
+                line widgetWrapperOthers 
+                line widgetWrapperOthers
             }
         }
         page myPageOne "pageTwo" {
-            widgetWrapper widgetWrapperOne width: 100 px {
+            widgetWrapper widgetWrapperOne width: 100 % {
                 classic statlicenciement
                 linechart statCasContact {
                     filters on the left

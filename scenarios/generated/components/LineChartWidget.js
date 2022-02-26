@@ -5,8 +5,8 @@ import { Row } from 'reactstrap';
 import Chart from "react-apexcharts";
 import React from 'react'
 import { FormClose } from 'grommet-icons';
-export const LineChartWidget= ({ data }) => (
-<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row">
+export const LineChartWidget= ({ data, width}) => (
+<Box align="center" justify="center" pad="small"  flex={false} fill="vertical" direction="row" width={width}>
 <Box round="5px" background="#FFF" align="center" pad="small" >
 <Box align="center" justify="center" pad="xsmall" margin="xsmall">
 <Heading level="2" size="medium" margin="xsmall" textAlign="center">{data.title}</Heading>

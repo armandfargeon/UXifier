@@ -835,7 +835,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Keyword",
-            "value": "px"
+            "value": "%"
           },
           {
             "$type": "Keyword",
@@ -900,18 +900,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
-            "$type": "Assignment",
-            "feature": "base",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "AbstractWidget"
-              }
-            }
-          },
-          {
             "$type": "Keyword",
             "value": "=>"
           },
@@ -933,6 +921,18 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               }
             },
             "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "base",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "AbstractWidget"
+              }
+            }
           }
         ]
       }
@@ -1029,8 +1029,8 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
                 "$refText": "Platform"
               }
             },
-            "cardinality": "?",
-            "elements": []
+            "elements": [],
+            "cardinality": "*"
           },
           {
             "$type": "Keyword",
@@ -1061,22 +1061,11 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "feature": "screenSize",
             "operator": "=",
             "terminal": {
-              "$type": "Alternatives",
-              "elements": [
-                {
-                  "$type": "Keyword",
-                  "value": "small",
-                  "elements": []
-                },
-                {
-                  "$type": "Keyword",
-                  "value": "medium"
-                },
-                {
-                  "$type": "Keyword",
-                  "value": "large"
-                }
-              ]
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Screen"
+              }
             }
           },
           {
@@ -1319,6 +1308,33 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           {
             "$type": "Keyword",
             "value": "VisionReduiteMode",
+            "elements": []
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Screen",
+      "hiddenTokens": [],
+      "type": "string",
+      "alternatives": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "small",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "medium",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "large",
             "elements": []
           }
         ]

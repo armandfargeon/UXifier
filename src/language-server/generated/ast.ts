@@ -134,7 +134,7 @@ export function isPage(item: unknown): item is Page {
 export interface Platform extends AstNode {
     readonly $container: Page;
     lines: Array<Line>
-    screenSize: 'small' | 'medium' | 'large'
+    screenSize: Screen
 }
 
 export const Platform = 'Platform';
@@ -255,8 +255,9 @@ export type Position = 'left' | 'top' | 'bottom' | 'right'
 
 export type Mode = 'DarkMode' | 'DaltonienMode' | 'VisionReduiteMode'
 
+export type Screen = 'small' | 'medium' | 'large'
 
-export type UxifierAstType = 'App' | 'Color' | 'FQN' | 'Header' | 'Hidden' | 'Line' | 'Menu' | 'OptionsFilters' | 'ModeType' | 'Page' | 'Platform' | 'Plugins' | 'Theme' | 'Widget' | 'WidgetWrapper' | 'AbstractWidget' | 'Popup' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
+export type UxifierAstType = 'App' | 'Color' | 'FQN' | 'Header' | 'Hidden' | 'Line' | 'Menu' | 'ModeType' | 'OptionsFilters' | 'Page' | 'Platform' | 'Plugins' | 'Theme' | 'Widget' | 'WidgetWrapper' | 'AbstractWidget' | 'Popup' | 'ClassicWidget' | 'ColumnChartWidget' | 'LineChartWidget' | 'PolarChartWidget';
 
 export type UxifierAstReference = 'Header:color' | 'Line:widgetWrappers' | 'Popup:popup';
 
