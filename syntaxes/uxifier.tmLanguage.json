@@ -10,11 +10,11 @@
     },
     {
       "name": "keyword.control.uxifier",
-      "match": "\\b(app|bottom|classic|code|color|colors|column|columnchart|DaltonienMode|DarkMode|downloadeable|filters|header|hide|left|level|linechart|logo|measures|menu|on|page|plugins{|polarchart|popup|px|right|the|theme|title|top|VisionReduiteMode|widgetWrapper|width|width:|workingDirectory=>|X)\\b"
+      "match": "\\b(app|bottom|classic|code|color|colors|column|columnchart|DaltonienMode|DarkMode|downloadeable|filters|header|hide|large|left|level|line|linechart|logo|measures|medium|menu|on|page|platform|plugins{|polarchart|popup|right|small|the|theme|title|top|VisionReduiteMode|widgetWrapper|width|width:|workingDirectory=>|X)\\b"
     },
     {
       "name": "keyword.symbol.uxifier",
-      "match": "(\\.|\\{|\\}|\\=>|\\plugins{|\\width:|\\workingDirectory=>)"
+      "match": "(\\:|\\.|\\[|\\]|\\{|\\}|\\%|\\=>|\\||\\plugins{|\\width:|\\workingDirectory=>)"
     }
   ],
   "repository": {

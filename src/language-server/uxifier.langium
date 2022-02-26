@@ -61,7 +61,7 @@ PolarChartWidget:
 OptionsFilters: "filters" "on" "the" position=Position;
 
 WidgetWrapper:
-    'widgetWrapper' name=ID "width:" width=INT 'px' '{' 
+    'widgetWrapper' name=ID "width:" width=INT '%' '{' 
         widgets+=Widget
         (widgets+=Widget)*
     '}';
@@ -75,11 +75,11 @@ Widget:
 Page:
     'page' name=ID title=STRING '{' 
         widgetWrappers+=WidgetWrapper* 
-        (platforms+=Platform*)?
+        (platforms+=Platform)*
     '}';
 
 Platform:
-    'platform' '[' screenSize=('small' | 'medium' | 'large') ']' ':' '{' lines+=Line* '}';
+    'platform' '[' screenSize=Screen']' ':' '{' lines+=Line* '}';
 
 Line: 
     'line' widgetWrappers+=[WidgetWrapper|ID] ('|' widgetWrappers+=[WidgetWrapper|ID])*;
@@ -99,6 +99,7 @@ Position returns string: 'left' | 'top' | 'bottom' | 'right';
 
 Mode returns string: 'DarkMode' | 'DaltonienMode' | 'VisionReduiteMode';
 
+Screen returns string: 'small' | 'medium' | 'large';
 terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal INT returns number: /[0-9]+/;

@@ -835,7 +835,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Keyword",
-            "value": "px"
+            "value": "%"
           },
           {
             "$type": "Keyword",
@@ -900,18 +900,6 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             }
           },
           {
-            "$type": "Assignment",
-            "feature": "base",
-            "operator": "=",
-            "terminal": {
-              "$type": "RuleCall",
-              "arguments": [],
-              "rule": {
-                "$refText": "AbstractWidget"
-              }
-            }
-          },
-          {
             "$type": "Keyword",
             "value": "=>"
           },
@@ -933,6 +921,18 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               }
             },
             "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "base",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "AbstractWidget"
+              }
+            }
           }
         ]
       }
@@ -1015,11 +1015,150 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               "rule": {
                 "$refText": "WidgetWrapper"
               }
-            }
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "platforms",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Platform"
+              }
+            },
+            "elements": [],
+            "cardinality": "*"
           },
           {
             "$type": "Keyword",
             "value": "}"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Platform",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "platform",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "["
+          },
+          {
+            "$type": "Assignment",
+            "feature": "screenSize",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Screen"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": "]"
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Keyword",
+            "value": "{"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "lines",
+            "operator": "+=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "Line"
+              }
+            },
+            "cardinality": "*"
+          },
+          {
+            "$type": "Keyword",
+            "value": "}"
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Line",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "line",
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "widgetWrappers",
+            "operator": "+=",
+            "terminal": {
+              "$type": "CrossReference",
+              "type": {
+                "$refText": "WidgetWrapper"
+              },
+              "terminal": {
+                "$type": "RuleCall",
+                "arguments": [],
+                "rule": {
+                  "$refText": "ID"
+                }
+              }
+            }
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "|",
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "widgetWrappers",
+                "operator": "+=",
+                "terminal": {
+                  "$type": "CrossReference",
+                  "type": {
+                    "$refText": "WidgetWrapper"
+                  },
+                  "terminal": {
+                    "$type": "RuleCall",
+                    "arguments": [],
+                    "rule": {
+                      "$refText": "ID"
+                    }
+                  }
+                }
+              }
+            ],
+            "cardinality": "*"
           }
         ]
       }
@@ -1169,6 +1308,33 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           {
             "$type": "Keyword",
             "value": "VisionReduiteMode",
+            "elements": []
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Screen",
+      "hiddenTokens": [],
+      "type": "string",
+      "alternatives": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "small",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "medium",
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "large",
             "elements": []
           }
         ]
