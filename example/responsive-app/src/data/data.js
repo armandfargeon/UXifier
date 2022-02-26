@@ -2,14 +2,14 @@ export const statscovid = {
   title: "Statistiques Covid",
   icon_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Approve_icon.svg/1200px-Approve_icon.svg.png",
   data: 1590,
-  description: "Statistique de la covid-19 référencant un nombre de cas en France"
+  description: "Nombre de cas en France"
 };
 
 export const statlicenciement = {
   title: "Statistiques Licenciement",
   icon_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Approve_icon.svg/1200px-Approve_icon.svg.png",
   data: 19,
-  description: "Statistique de licensiement référencant un nombre de licensiement en 2022"
+  description: "Nombre de licenciement en 2022"
 };
 
 export const statCasContact = {
@@ -29,7 +29,7 @@ export const statCasContact = {
       }
     ]
   },
-  description: "Statistique de licensiement référencant un nombre de licensiement en 2022"
+  description: "Statistiques Cas contact covid en 2021"
 };
 
 export const statParticipation = {
@@ -56,12 +56,12 @@ export const statParticipation = {
       reverse: false,
     },
   },
-  description: "Statistique de licensiement référencant un nombre de licensiement en 2022"
+  description: "Nombre de licenciement en 2022"
 };
 
 export const statCrypto = {
-  title: "Statistiques des cryptos monaies",
-  description: "Les cryptos montant sur le marché",
+  title: "Statistiques des cryptos monnaies",
+  description: "Le marché de la crypto explose",
   options: {
     colors: ['#abeb65', '#a565ea', '#72C6FF', '#c808f9'],
     plotOptions: {
