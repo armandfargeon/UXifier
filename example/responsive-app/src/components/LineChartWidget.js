@@ -14,7 +14,7 @@ export const LineChartWidget= ({ data, width }) => (
 
 <LineChart options={{ legend: { 
             position: 'left',
-         }, }} data={data.data} />
+         },maintainAspectRatio: true }} data={data.data} />
 </Box>
 </Box>
 </Box>

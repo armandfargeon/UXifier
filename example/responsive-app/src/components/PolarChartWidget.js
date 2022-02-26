@@ -14,7 +14,7 @@ export const PolarChartWidget= ({ data, width }) => (
 
 <PolarChart data={data.data} options={{ themedData: true, legend: { 
             position: 'left',
-         }, }} />
+         },maintainAspectRatio: true }} />
 </Box>
 </Box>
 </Box>
