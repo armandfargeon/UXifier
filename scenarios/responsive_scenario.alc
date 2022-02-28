@@ -1,0 +1,81 @@
+app responsive {
+    workingDirectory=>"C:\Users\I553266\Cours\DSL\UXifier\example\responsive-app\src"
+    theme myTheme {
+        colors{
+            color black code "#000000"
+            color green code "#00FF00"
+            color white code "#FFFFFF"
+            color graylight code "#ededed"
+        } 
+    }
+    header AppBar title "Responsive scenario" logo "www.image-url.com" level 3 myTheme.black
+    hide myhide{
+        classic statscovid
+    }
+    menu Menu {
+        page crypto "Crypto" {
+            widgetWrapper news_crypto_mobile width: 100 % {
+                classic newsCrypto
+            }
+            widgetWrapper stats_crypto_mobile width: 100 % {
+                columnchart statCrypto {
+                    filters on the left
+                    column width measures "45%"
+                    downloadeable "true"
+                }
+            }
+
+
+            widgetWrapper widgetWrapperOthers width: 100 % {
+                classic newsCrypto
+                columnchart statCrypto {
+                    filters on the left
+                    column width measures "45%"
+                    downloadeable "true"
+                }
+            }
+            platform [small]: {
+                line news_crypto_mobile
+                line stats_crypto_mobile
+            } 
+            platform [medium]: {
+                line widgetWrapperOthers
+            }
+            platform [large]: {
+                line widgetWrapperOthers
+            }
+        }
+        page covid "Covid" {
+            widgetWrapper widgetContaminations width: 100 % {
+                linechart contaminations {
+                    filters on the left
+                }
+            }
+
+            widgetWrapper widgetGlobalContaminations width: 100 % {
+                classic globalContaminations
+            }
+
+            platform [small]: {
+                line widgetGlobalContaminations
+            } 
+            platform [medium]: {
+                line widgetContaminations
+            }
+            platform [large]: {
+                line widgetContaminations
+            }
+            
+        }
+        page contact "Contact" {
+            widgetWrapper widgetContact width: 100 % {
+                classic contact
+            }
+
+        }
+    }
+
+    plugins{
+        DarkMode X left
+    }
+}

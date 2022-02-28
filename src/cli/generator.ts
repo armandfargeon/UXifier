@@ -128,7 +128,7 @@ class GrommetAppGenerator {
 
         ;
         if(!isForComponents){
-            dependencies.writeln("import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto } from './data/data'")
+            dependencies.writeln("import { statscovid, statlicenciement, statCasContact, statParticipation, statCrypto, contaminations, globalContaminations, newsCrypto, contact } from './data/data'")
             dependencies.writeln("import {ClassicWidget} from './components/ClassicWidget';\n");
             dependencies.writeln("import {ColumnChartWidget} from './components/ColumnChartWidget';\n");
             dependencies.writeln("import {LineChartWidget} from './components/LineChartWidget';\n");
@@ -333,7 +333,7 @@ class GrommetAppGenerator {
         sb.writeln(this.generateFirstTagWidgetContainer());
         sb.writeln("<Text alignSelf=\"center\" size=\"90px\" weight=\"bold\"> {data.data} </Text> \n");
         sb.writeln("<Box width=\"50%\">")
-        sb.writeln("<Image fit=\"contain\" src={data.icon_url} fill=\"true\"/>");
+        sb.writeln("{data.icon_url ? <Image fit=\"contain\" src={data.icon_url} fill=\"true\"/> : ''}");
         sb.writeln("</Box>")
         sb.writeln(this.generateLastTagWidgetContainer());
         sb.write(");\n \n");

@@ -105,4 +105,46 @@ export const statCrypto = {
     data: [28]
   }],
 };
-export const datas = {statscovid: statscovid, statlicenciement:statlicenciement, statCasContact:statCasContact, statParticipation:statParticipation, statCrypto:statCrypto}
+
+export const contaminations = {
+  title: "Chiffres contaminations covid 2021",
+  data: {
+    labels: ["January", "February", "March", "April", "May", "June"],
+    datasets: [
+      {
+        label: "Contaminations quotidienne",
+        data: [2500, 2700, 3000, 1600, 1100, 600],
+        fill: false,
+      }
+    ]
+  },
+  description: "Moyenne des contaminations - Semestre 1 (2021)"
+};
+
+export const globalContaminations = {
+  title: "Moyenne contaminations covid par jour en 2021",
+  icon_url: "https://www.fai2r.org/wp-content/uploads/2020/09/COVID19-Infos-Bulles-300x297.png",
+  data: 1600,
+  description: "Moyenne des contaminations sur le premier semestre 2021"
+};
+
+export const newsCrypto = {
+  title: "Prochain bull run, 2024 ?",
+  icon_url: "https://static.euronews.com/articles/stories/06/40/93/46/1100x619_cmsv2_316c7ff6-be5c-5c9d-b4ef-70584487540f-6409346.jpg",
+  data: 1600,
+  description: "Comme en 2017, pourrait-on à nouveau connaître un crash du cours des crypto monnaies ?"
+};
+
+export const contact = {
+  title: "Nous contacter !",
+  icon_url: "https://images.g2crowd.com/uploads/product/image/large_detail/large_detail_cacba62245fb335695b27bf2f00465b2/contactus-com.png",
+  data: `  
+   , _ ,
+  ( o o )
+ /'\` ' \`'\
+ |'''''''|
+ |\\'''//|
+    """`,
+  description: "Contacter nous par e-mail pour toutes questions: team_c@polydsl.alc"
+};
+export const datas = {statscovid: statscovid, statlicenciement:statlicenciement, statCasContact:statCasContact, statParticipation:statParticipation, statCrypto:statCrypto, contaminations: contaminations, globalContaminations:globalContaminations, newsCrypto:newsCrypto, contact:contact}

@@ -15,7 +15,7 @@ export const ClassicWidget= ({ data, width }) => (
 <Text alignSelf="center" size="90px" weight="bold"> {data.data} </Text> 
 
 <Box width="50%">
-<Image fit="contain" src={data.icon_url} fill="true"/>
+{data.icon_url ? <Image fit="contain" src={data.icon_url} fill="true"/> : ''}
 </Box>
 </Box>
 </Box>
