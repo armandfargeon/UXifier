@@ -12,7 +12,7 @@ const onOpen = () => setOpen(true);
 const onClose = () => setOpen(undefined);
 return (
 <Grommet  full>
-<Box fill align="center" justify="center" gap="medium" onClick={onOpen}>
+<Box gap="medium" onClick={onOpen}>
 {base}
 </Box>
 {open && (
