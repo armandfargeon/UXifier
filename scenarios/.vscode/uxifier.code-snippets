@@ -1,5 +1,5 @@
 {
-		"Declare a theme": {
+	"Declare a theme": {
 		"scope": "uxifier",
 		"prefix": "theme",
 		"body": [
@@ -69,7 +69,7 @@
 	},
 	"Create header": {
 		"scope": "uxifier",
-		"prefix": ["header", "head", "hd"],
+		"prefix": ["header", "head"],
 		"body": [
 			"header AppBar title \"$1\" logo \"$2\" level $3 myTheme.$4"
 		],
@@ -91,11 +91,40 @@
 		],
 		"description": "Declation of hidden widgets that gone be popups"
 	},
+	"Platform": {
+		"scope": "uxifier",
+		"prefix": ["platform"],
+		"body": [
+			"platform [$1]: {",
+			"\tline $2",
+			"}"
+		],
+		"description": "Declation of platform"
+	},
 	"Create App": {
 		"scope": "uxifier",
 		"prefix": ["app"],
 		"body": [
-			"app $1 {\n $2 \n}"
+			"app $1 {",
+				"\ttheme myTheme {",
+					"\t\tcolors {",
+						"\t\t\tcolor black code \"#000000\"",
+						"\t\t\tcolor white code \"#FFFFFF\"",
+						"\t\t\tcolor green code \"#00FF00\"",
+						"\t\t\tcolor red code \"#FF0000\"",
+						"\t\t\tcolor blue code \"#0000FF\"",
+					"\t\t}",
+				"\t}",
+				"\theader $2 title \"$3\" logo \"$4\" level $5 myTheme.$6",
+				"\tmenu $7 {",
+					"\t\tpage $8 $9 {",
+						"\t\t\twidgetWrapper $10 width: $11 {",
+							"\t\t\t\t$12 $13 {",
+							"\t\t\t\t}",
+						"\t\t\t}",
+					"\t\t}",
+				"\t}",
+			"}"
 		],
 		"description": "App"
 	}
