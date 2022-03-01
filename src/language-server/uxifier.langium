@@ -4,7 +4,7 @@ hidden(WS, SL_COMMENT, ML_COMMENT)
 App:
     'app' name=ID 
         '{'
-            "workingDirectory=>" path=STRING?
+            ("workingDirectory=>" path=STRING)?
             theme=Theme
             header=Header
             hide=Hidden

@@ -1,5 +1,5 @@
 app responsive {
-    workingDirectory=>"C:\Users\I553266\Cours\DSL\UXifier\example\responsive-app\src"
+    workingDirectory=>"C:\Users\moham\Desktop\v3\UXifier\example\responsive-app\src"
     theme myTheme {
         colors{
             color black code "#000000"

@@ -60,9 +60,10 @@ export class UxifierValidator {
     }
 
     checkPath(app: App, accept: ValidationAcceptor){
-        if (!fs.existsSync(app.path)) {
-            accept('warning', `Path ${app.path} does not exists.`, { node: app, property: 'path' }); 
-            accept('info', `Please specify the path of you're working Grommet App.`, { node: app, property: 'path' }); 
+        if(app.path != null && app.path != "" && !fs.existsSync(app.path)){
+            accept('warning', ` Path ${app.path} does not exists. `, { node: app, property: 'path' }); 
+            accept('info', ` Please specify the path of you're working Grommet App. `, { node: app, property: 'path' }); 
         }
     }
+    
 }

@@ -1,5 +1,4 @@
 app dsl {
-    workingDirectory=>"C:\Users\moham\Desktop\v3\UXifier\scenarios\generated"
     theme myTheme {
         colors{
             color black code "#000000"
@@ -15,10 +14,6 @@ app dsl {
     menu MyMenu {
         page myPageOne "pageOne" {
             widgetWrapper widgetWrapperOne width: 100 % {
-                classic statlicenciement
-                linechart statCasContact {
-                    filters on the left
-                }
                 polarchart statParticipation { 
                     filters on the left
                 }

@@ -11,7 +11,7 @@ export function generateJavaScript(app: App, filePath: string, destination: stri
     const grommetAppGenerator = new GrommetAppGenerator();
 
     let workingPath: string = "";
-    app.path != null ? workingPath = app.path + "/components": workingPath = data.destination + "/components";
+    app.path != null && app.path != "" ? workingPath = app.path + "/components": workingPath = data.destination + "/components";
     fileNode.append(grommetAppGenerator.compile(app, workingPath));
 
     if (!fs.existsSync(data.destination)) {
