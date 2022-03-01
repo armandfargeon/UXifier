@@ -1,7 +1,7 @@
 # UXifier
 Second delivery of the Dashboading DSL 
 
-**Scenarios list** : ***Responsive_scenario - Popup***
+**Scenarios list** : ***Responsive_scenario - Popup - Scenario***
 
 ### Execution scenarios  
 * Generate the new grammar
@@ -14,19 +14,28 @@ npm run build
 ```
 
 To launch the extension (after generating the grammar && building dsl) :
-* hit F5 button (the langium project must be opened in VS code at its root and not the entire ArduinoML folder)
+* Hit F5 (the Langium project must be opened in VS Code at its root and not the entire UXifier folder)
 
 * This opens a new VScode window allowing to edit .alc 
-* chose between step 1 or 2
+* Chose between either 
 
-* 1 /To transform an .alc file into an grommet :
+  * To transform an .alc file into an grommet :
+  ```sh
+  ../bin/cli generate fileName.alc
+  ``` 
+
+  * To automaticly create the grommet app : \
+  this build takes longer because we create the application from scratch
+  ```sh
+  sh build.sh fileName.alc
+  ``` 
+Then go to the directory 
 ```sh
-../bin/cli generate fileName.alc
-```
-* 2/ to automaticly create the grommet app :
-```sh
-sh build.sh fileName.alc
-```
+cd fileName
+npm i 
+npm start
+``` 
+
 
 ### Team
 - [Rachid EL ADLANI](https://github.com/rachid-eladlani)
