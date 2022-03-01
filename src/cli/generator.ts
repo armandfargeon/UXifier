@@ -276,7 +276,7 @@ class GrommetAppGenerator {
 
     WidgetWrapperDeclaration(widgetWrapperObj: WidgetWrapper,app:App) {
         let widgets = `\t\t\t\t\t<Box name="${widgetWrapperObj.name}" \n width="${widgetWrapperObj.width}%" direction="row" overflow="auto"> \n`
-        let sizeEachWidget = 100 / widgetWrapperObj.widgets.filter(w => !isPopup(w)).length
+        let sizeEachWidget = 100 / widgetWrapperObj.widgets.length
         widgetWrapperObj.widgets.forEach(widget => {
             widgets += this.generateWidgetTag(widget,app, sizeEachWidget)
         });
@@ -286,11 +286,11 @@ class GrommetAppGenerator {
 
     generateWidgetTag(widget: AbstractWidget,app:App, widgetSize?: number): string {
         if(isPopup(widget)){
-            let wid ;
+            let wid:any ;
             if(widget.popup){
                 wid  = this.findWidgetPrivate(widget,app);
             }
-            if(wid)
+            if(wid && widgetSize)
                 return `<${widget.$type}  base ={${this.getWidgetFromPopup(widget.base,widget.base.name)}} pop= {${this.getWidgetFromPopup(wid,wid.name)}} />\n`
         }
 
@@ -406,7 +406,7 @@ class GrommetAppGenerator {
         sb.writeln('const onClose = () => setOpen(undefined);')
         sb.writeln('return (')
         sb.writeln('<Grommet  full>')
-        sb.writeln('<Box fill align="center" justify="center" gap="medium" onClick={onOpen}>')     
+        sb.writeln('<Box  gap="medium" onClick={onOpen}>')     
         if(isPopup(widget)){
             sb.writeln( "{base}");
         }
@@ -432,13 +432,13 @@ class GrommetAppGenerator {
     }
     getWidgetFromPopup(widget:AbstractWidget, data : string){
         if(isClassicWidget(widget))
-            return `<ClassicWidget data={${data}}/>`
+            return `<ClassicWidget data={${data}} width="100%"/>`
         if(isColumnChartWidget(widget))
-            return `<ColumnChartWidget options={${data}} series={${data}} type="bar" height="300" />`;
+            return `<ColumnChartWidget options={${data}} series={${data}} type="bar" height="300"  width="100%"/>`;
         if(isLineChartWidget(widget))
-            return`<LineChartWidget data={${data}} />`;
+            return`<LineChartWidget data={${data}}  width="100%"/>`;
         if(isPolarChartWidget(widget))
-            return `<PolarChartWidget data={${data}} options={${data}} />`;
+            return `<PolarChartWidget data={${data}} options={${data}} width="100%" />`;
 
         return undefined;
     }
@@ -508,7 +508,7 @@ class GrommetAppGenerator {
 
     findWidgetPrivate(popup: Popup , app :App){
        let widFinal = popup.$cstNode?.text;
-       widFinal = widFinal?.split(".").pop();
+       widFinal = widFinal?.split(".").pop()?.split(' ')[0];
 
         for(const wid of app.hide.widgets ){
             if(wid.name == widFinal )

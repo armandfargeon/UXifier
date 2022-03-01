@@ -1,0 +1,36 @@
+app dsl {
+    workingDirectory=>"C:\Users\moham\Desktop\v3\UXifier\scenarios\generated"
+    theme myTheme {
+        colors{
+            color black code "#000000"
+            color green code "#00FF00"
+            color white code "#FFFFFF"
+            color graylight code "#ededed"
+        } 
+    }
+    header AppBar title "test" logo "www.image-url.com" level 3 myTheme.black
+    hide myhide{
+        classic statscovid
+    }
+    menu MyMenu {
+        page myPageOne "pageOne" {
+            widgetWrapper widgetWrapperOne width: 100 % {
+                classic statlicenciement
+                linechart statCasContact {
+                    filters on the left
+                }
+                polarchart statParticipation { 
+                    filters on the left
+                }
+                popup popup1 => myhide.statscovid polarchart statParticipation { 
+                    filters on the left
+                }
+
+            }
+        }
+    }
+
+    plugins{
+        DarkMode X left
+    }
+}
