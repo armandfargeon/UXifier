@@ -1,5 +1,4 @@
 app dsl {
-    workingDirectory=>"C:\Users\I553266\Cours\DSL\UXifier\example\responsive-app\src"
     theme myTheme {
         colors{
             color black code "#000000"
@@ -8,43 +7,19 @@ app dsl {
             color graylight code "#ededed"
         } 
     }
-    header AppBar title "test" logo "www.image-url.com" level 3 myTheme.black
+    header AppBar title "All The Widgets" logo "www.image-url.com" level 3 myTheme.black
     hide myhide{
         classic statscovid
     }
     menu MyMenu {
         page myPageOne "pageOne" {
-            widgetWrapper widgetWrapperMobile width: 100 % {
-                columnchart statCrypto {
-                    filters on the left
-                    column width measures "45%"
-                    downloadeable "true"
-                }
-            }
-            widgetWrapper widgetWrapperOthers width: 100 % {
-                classic statscovid
-                columnchart statCrypto {
-                    filters on the left
-                    column width measures "45%"
-                    downloadeable "true"
-                }
-            }
-            platform [small]: {
-                line widgetWrapperMobile
-            } 
-            platform [medium]: {
-                line widgetWrapperOthers
-                line widgetWrapperOthers
-            }
-            platform [large]: {
-                line widgetWrapperOthers
-                line widgetWrapperOthers 
-                line widgetWrapperOthers
-            }
-        }
-        page myPageOne "pageTwo" {
             widgetWrapper widgetWrapperOne width: 100 % {
-                classic statlicenciement
+                columnchart statCrypto {
+                    filters on the left
+                    column width measures "45%"
+                    downloadeable "true"
+                }
+                classic statscovid
                 linechart statCasContact {
                     filters on the left
                 }
@@ -52,6 +27,7 @@ app dsl {
                     filters on the left
                 }
             }
+            
         }
     }
 
