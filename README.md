@@ -1,7 +1,7 @@
 # UXifier
 Second delivery of the Dashboading DSL 
 
-**Scenarios list** : ***Responsive_scenario - Popup - Scenario***
+**Scenarios list** : ***Responsive_scenario - Popup - basic_scenario***
 
 ### Execution scenarios  
 * Generate the new grammar
