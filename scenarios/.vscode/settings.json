@@ -5,11 +5,10 @@
         "reloadButton":"♻️", // Custom reload button text or icon (default ↻). null value enables automatic reload on configuration change
         "commands": [
             {
-                "cwd": "${fileDirname}/", 	// Terminal initial folder ${workspaceFolder} and os user home as defaults
-                "name": "Update project",
+                "cwd": "${workspaceFolder}/", 	// Terminal initial folder ${workspaceFolder} and os user home as defaults
+                "name": "Target code generation by Uxifier",
                 "color": "white",
-                "singleInstance": true,
-                "command": "../bin/cli generate scenario.alc", // This is executed in the terminal.
+                "command": "../bin/cli generate basic_scenario.alc"
             }
         ]
     }
